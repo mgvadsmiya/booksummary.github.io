@@ -1,0 +1,2664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Momentum Masters — Structured Notes</title>
+<style>
+  :root{
+    --bg:#0a0c10;
+    --bg-2:#12161d;
+    --bg-3:#1a1f29;
+    --line:#242b37;
+    --line-2:#2f3846;
+    --txt:#e4e8ef;
+    --txt-dim:#939daf;
+    --accent:#4ade80;
+    --accent-2:#60a5fa;
+    --warn:#fbbf24;
+    --bad:#f87171;
+    --radius:14px;
+    --shadow:0 10px 30px -18px rgba(0,0,0,.9);
+  }
+
+  *{box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    margin:0;
+    background:
+      radial-gradient(1100px 600px at 50% -200px, rgba(74,222,128,.05), transparent 70%),
+      var(--bg);
+    color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:16px;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- SCROLLBAR ---------- */
+  ::-webkit-scrollbar{width:10px;height:8px;}
+  ::-webkit-scrollbar-track{background:#0d1015;}
+  ::-webkit-scrollbar-thumb{
+    background:#2a323f;
+    border-radius:10px;
+    border:2px solid #0d1015;
+  }
+  ::-webkit-scrollbar-thumb:hover{background:#3a4453;}
+
+  /* ---------- HEADER ---------- */
+  header{
+    position:relative;
+    padding:48px 20px 36px;
+    border-bottom:1px solid var(--line);
+    overflow:hidden;
+    background:
+      radial-gradient(900px 320px at 12% -50%, rgba(74,222,128,.16), transparent 62%),
+      radial-gradient(760px 300px at 88% -45%, rgba(96,165,250,.14), transparent 62%),
+      linear-gradient(180deg,#12161e,#0a0c10);
+  }
+  header::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);
+    background-size:44px 44px;
+    mask-image:linear-gradient(180deg, rgba(0,0,0,.6), transparent 85%);
+    -webkit-mask-image:linear-gradient(180deg, rgba(0,0,0,.6), transparent 85%);
+    pointer-events:none;
+  }
+  .wrap{
+    max-width:1000px;
+    margin:0 auto;
+    position:relative;
+    z-index:1;
+  }
+  header h1{
+    margin:0;
+    font-size:clamp(1.45rem, 3.4vw, 2rem);
+    line-height:1.25;
+    letter-spacing:-.5px;
+    font-weight:800;
+    background:linear-gradient(180deg,#ffffff 20%, #a9b6c9 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .title-rule{
+    width:74px;
+    height:3px;
+    margin-top:16px;
+    border-radius:99px;
+    background:linear-gradient(90deg, var(--accent), var(--accent-2));
+    box-shadow:0 0 22px -4px rgba(74,222,128,.8);
+  }
+
+  /* ---------- TAB BAR ---------- */
+  nav.tabs{
+    position:sticky;
+    top:0;
+    z-index:50;
+    background:rgba(10,12,16,.82);
+    backdrop-filter:blur(14px) saturate(140%);
+    -webkit-backdrop-filter:blur(14px) saturate(140%);
+    border-bottom:1px solid var(--line);
+    padding:12px 20px 10px;
+  }
+  .tabbar{
+    max-width:1000px;
+    margin:0 auto;
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    scrollbar-width:thin;
+    padding-bottom:6px;
+  }
+  .tabbar::-webkit-scrollbar{height:5px;}
+  .tabbar::-webkit-scrollbar-track{background:transparent;}
+  .tabbar::-webkit-scrollbar-thumb{background:#2c3340;border-radius:6px;border:none;}
+  .tabbar::-webkit-scrollbar-thumb:hover{background:#3c4553;}
+
+  .tab{
+    flex:0 0 auto;
+    background:var(--bg-3);
+    border:1px solid var(--line);
+    color:var(--txt-dim);
+    padding:8px 15px;
+    border-radius:999px;
+    font-size:.8rem;
+    font-weight:500;
+    cursor:pointer;
+    white-space:nowrap;
+    font-family:inherit;
+    letter-spacing:.2px;
+    transition:background .2s ease, color .2s ease, border-color .2s ease,
+               box-shadow .25s ease, transform .15s ease;
+  }
+  .tab:hover{
+    color:var(--txt);
+    border-color:var(--line-2);
+    background:#20262f;
+    transform:translateY(-1px);
+  }
+  .tab.active{
+    background:linear-gradient(180deg,#5ee78f,#34d399);
+    border-color:transparent;
+    color:#052a15;
+    font-weight:700;
+    box-shadow:0 6px 20px -8px rgba(52,211,153,.85);
+  }
+  .tab.active:hover{transform:none;}
+
+  /* reading progress */
+  .progress-track{
+    max-width:1000px;
+    margin:8px auto 0;
+    height:2px;
+    border-radius:99px;
+    background:rgba(255,255,255,.05);
+    overflow:hidden;
+  }
+  #progress{
+    display:block;
+    height:100%;
+    width:0;
+    border-radius:99px;
+    background:linear-gradient(90deg, var(--accent), var(--accent-2));
+    transition:width .12s linear;
+  }
+
+  /* ---------- PANELS ---------- */
+  main{
+    max-width:1000px;
+    margin:0 auto;
+    padding:34px 20px 90px;
+  }
+  .panel{display:none;}
+  .panel.active{
+    display:block;
+    animation:fade .28s cubic-bezier(.22,.61,.36,1);
+  }
+  @keyframes fade{
+    from{opacity:0;transform:translateY(10px);}
+    to{opacity:1;transform:none;}
+  }
+
+  /* ---------- TYPOGRAPHY ---------- */
+  h2.chapter{
+    font-size:clamp(1.3rem, 2.6vw, 1.55rem);
+    margin:0 0 8px;
+    color:#fff;
+    letter-spacing:-.4px;
+    font-weight:800;
+  }
+  .chapter-sub{
+    position:relative;
+    color:var(--txt-dim);
+    font-size:.85rem;
+    margin:0 0 32px;
+    padding-bottom:16px;
+    border-bottom:1px solid var(--line);
+  }
+  .chapter-sub::after{
+    content:"";
+    position:absolute;
+    left:0;
+    bottom:-1px;
+    width:70px;
+    height:1px;
+    background:linear-gradient(90deg, var(--accent), transparent);
+  }
+
+  h3{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-size:.76rem;
+    font-weight:700;
+    letter-spacing:1.4px;
+    text-transform:uppercase;
+    color:var(--accent);
+    margin:36px 0 14px;
+  }
+  h3::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:linear-gradient(90deg, var(--line), transparent);
+  }
+
+  h4{
+    font-size:.95rem;
+    font-weight:700;
+    margin:22px 0 8px;
+    color:var(--accent-2);
+    letter-spacing:.2px;
+  }
+  h4:first-child{margin-top:0;}
+
+  p{margin:0 0 12px;}
+  ul,ol{margin:0 0 14px;padding-left:22px;}
+  li{margin-bottom:7px;}
+  li::marker{color:#4b5768;}
+  strong{color:#fff;font-weight:650;}
+  em{color:var(--txt-dim);font-style:normal;}
+
+  /* ---------- CARDS ---------- */
+  .card{
+    position:relative;
+    background:linear-gradient(158deg,#141922 0%, #101319 100%);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px 22px;
+    margin:0 0 18px;
+    box-shadow:var(--shadow);
+    transition:border-color .25s ease, transform .25s ease;
+  }
+  .card:hover{
+    border-color:var(--line-2);
+    transform:translateY(-2px);
+  }
+  .card.accent{border-left:3px solid var(--accent);}
+  .card.blue{border-left:3px solid var(--accent-2);}
+  .card.warn{border-left:3px solid var(--warn);}
+  .card.bad{border-left:3px solid var(--bad);}
+
+  .card.accent{border-left-color:var(--accent);}
+  .card.blue{border-left-color:var(--accent-2);}
+  .card.warn{border-left-color:var(--warn);}
+  .card.bad{border-left-color:var(--bad);}
+
+  .card:last-child{margin-bottom:0;}
+
+  .quote{
+    font-size:1.02rem;
+    color:#fff;
+    font-style:italic;
+    border-left:3px solid var(--accent);
+    background:linear-gradient(90deg, rgba(74,222,128,.09), rgba(74,222,128,0) 70%);
+    padding:12px 18px;
+    border-radius:0 10px 10px 0;
+    margin:18px 0;
+    line-height:1.6;
+  }
+
+  /* ---------- PILLS & TAGS ---------- */
+  .pill-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin:10px 0 18px;
+  }
+  .pill{
+    background:var(--bg-3);
+    border:1px solid var(--line);
+    color:var(--txt);
+    padding:6px 13px;
+    border-radius:999px;
+    font-size:.79rem;
+    transition:border-color .2s, background .2s, transform .15s;
+  }
+  .pill:hover{
+    border-color:var(--line-2);
+    background:#212833;
+    transform:translateY(-1px);
+  }
+
+  .tag{
+    display:inline-block;
+    background:rgba(74,222,128,.12);
+    color:var(--accent);
+    border:1px solid rgba(74,222,128,.3);
+    border-radius:6px;
+    padding:1px 8px;
+    font-size:.78rem;
+    font-weight:600;
+    letter-spacing:.4px;
+  }
+  .tag.bad{
+    background:rgba(248,113,113,.12);
+    color:var(--bad);
+    border-color:rgba(248,113,113,.3);
+  }
+  .tag.warn{
+    background:rgba(251,191,36,.12);
+    color:var(--warn);
+    border-color:rgba(251,191,36,.3);
+  }
+
+  /* ---------- TABLES ---------- */
+  .tablewrap{
+    overflow-x:auto;
+    margin:0 0 20px;
+    border-radius:var(--radius);
+    border:1px solid var(--line);
+    box-shadow:var(--shadow);
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:.89rem;
+    min-width:480px;
+    background:var(--bg-2);
+  }
+  thead th{
+    background:linear-gradient(180deg,#212836,#1a2029);
+    color:#fff;
+    text-align:left;
+    padding:12px 15px;
+    font-size:.75rem;
+    letter-spacing:.8px;
+    text-transform:uppercase;
+    border-bottom:1px solid var(--line);
+    white-space:nowrap;
+    font-weight:700;
+  }
+  tbody td{
+    padding:12px 15px;
+    border-bottom:1px solid #1b202a;
+    vertical-align:top;
+  }
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:nth-child(even){background:#151a22;}
+  tbody tr{transition:background .18s ease;}
+  tbody tr:hover{background:#1a212c;}
+  td.ok{color:var(--accent);font-weight:600;}
+  td.no{color:var(--bad);font-weight:600;}
+
+  /* ---------- FLOW ---------- */
+  .flow{
+    display:flex;
+    flex-direction:column;
+    margin:0 0 20px;
+  }
+  .flow-step{
+    background:linear-gradient(160deg,#151a23,#111419);
+    border:1px solid var(--line);
+    border-radius:11px;
+    padding:12px 18px;
+    font-size:.92rem;
+    transition:border-color .2s ease;
+  }
+  .flow-step:hover{border-color:var(--line-2);}
+  .flow-arrow{
+    text-align:center;
+    color:var(--accent);
+    font-size:.95rem;
+    line-height:1.2;
+    margin:3px 0;
+    opacity:.75;
+  }
+  .flow-step.highlight{
+    border-color:rgba(74,222,128,.55);
+    background:linear-gradient(160deg, rgba(74,222,128,.12), rgba(74,222,128,.04));
+    font-weight:700;
+    color:#fff;
+    box-shadow:0 8px 26px -16px rgba(74,222,128,.9);
+  }
+
+  /* ---------- STEP LIST ---------- */
+  .step-list{counter-reset:s;list-style:none;padding-left:0;}
+  .step-list li{
+    counter-increment:s;
+    position:relative;
+    padding-left:40px;
+    margin-bottom:13px;
+  }
+  .step-list li::before{
+    content:counter(s);
+    position:absolute;
+    left:0;
+    top:2px;
+    width:26px;
+    height:26px;
+    border-radius:50%;
+    background:var(--bg-3);
+    border:1px solid var(--line-2);
+    color:var(--accent);
+    font-size:.75rem;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  hr.sep{
+    border:none;
+    border-top:1px solid var(--line);
+    margin:30px 0;
+  }
+
+  .note{
+    font-size:.84rem;
+    color:var(--txt-dim);
+    font-style:italic;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    border-top:1px solid var(--line);
+    padding:26px 20px 34px;
+    text-align:center;
+    color:#5f6875;
+    font-size:.78rem;
+    background:linear-gradient(180deg, transparent, rgba(255,255,255,.014));
+  }
+  footer p{margin:0 0 6px;}
+  footer code{
+    color:#7d8797;
+    word-break:break-all;
+    font-size:.74rem;
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media(max-width:600px){
+    body{font-size:15px;}
+    header{padding:34px 15px 26px;}
+    nav.tabs{padding:10px 15px 8px;}
+    main{padding:26px 15px 70px;}
+    .card{padding:16px 17px;}
+    .quote{padding:10px 14px;}
+    h3{margin-top:30px;}
+  }
+
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{
+      animation-duration:.001ms !important;
+      transition-duration:.001ms !important;
+    }
+    html{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>Momentum Masters — Structured Notes</h1>
+    <div class="title-rule"></div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="tabbar" id="tabbar">
+    <button class="tab active" data-t="0">Intro &amp; Core Message</button>
+    <button class="tab" data-t="1">Trader Comparison Matrix</button>
+    <button class="tab" data-t="2">Trade Failure Diagnosis</button>
+    <button class="tab" data-t="3">Trade Journal System</button>
+    <button class="tab" data-t="4">Ch 1 · Mindset</button>
+    <button class="tab" data-t="5">Ch 2 · Stock Selection</button>
+    <button class="tab" data-t="6">Ch 3 · Position Sizing</button>
+    <button class="tab" data-t="7">Ch 4 · Technical Analysis</button>
+    <button class="tab" data-t="8">Ch 5 · Fundamentals</button>
+    <button class="tab" data-t="9">Ch 6 · General Market</button>
+    <button class="tab" data-t="10">Ch 7 · Entry Criteria</button>
+    <button class="tab" data-t="11">Ch 8 · Risk Management</button>
+    <button class="tab" data-t="12">Ch 9 · Selling</button>
+    <button class="tab" data-t="13">Big Picture</button>
+  </div>
+  <div class="progress-track"><span id="progress"></span></div>
+</nav>
+
+<main>
+
+<!-- ================= TAB 0 : INTRO / CORE MESSAGE ================= -->
+<section class="panel active" id="p1">
+  <h2 class="chapter">Introduction — How to Learn From This Book</h2>
+  <p class="chapter-sub">Core message, mental model and reading framework</p>
+
+  <h3>1. Core Message (Most Important)</h3>
+  <div class="card accent">
+    <p>This book exists to answer real questions from real traders, using insights from multiple top traders — not just one voice.</p>
+    <p>The goal is not theory, but practical, experience-based learning through comparison of different expert perspectives.</p>
+    <p>It emphasizes: <strong>learn principles, not personalities.</strong></p>
+  </div>
+
+  <h3>2. Simple Explanation</h3>
+  <div class="card">
+    <p>Many traders asked Mark Minervini questions over the years.</p>
+    <p>Instead of answering alone, he invited other top traders to answer the same questions.</p>
+    <p>So for each topic, you get multiple viewpoints.</p>
+    <p>Think of it like this: instead of one teacher, you have four experts discussing the same problem.</p>
+    <ul>
+      <li>The book is purely practical — no stories, no fluff.</li>
+      <li>Every question comes from real struggles traders face, not theory.</li>
+      <li>The idea is: you compare answers → find common patterns → build your own understanding.</li>
+    </ul>
+  </div>
+
+  <h3>3. Key Ideas / Concepts</h3>
+  <div class="card blue">
+    <ol>
+      <li><strong>Real Questions, Not Theory</strong> — All questions come from actual traders facing real problems. → This makes the book highly practical.</li>
+      <li><strong>Roundtable Format</strong> — Each question is answered by multiple experts. → You see similarities and differences clearly.</li>
+      <li><strong>No "One Right Way"</strong> — Different traders have slightly different approaches. → But core principles often overlap.</li>
+      <li><strong>Focus on Core Principles</strong> — The goal is to extract what all winners share, not to copy one method.</li>
+      <li><strong>Self-Discovery Learning</strong> — The book doesn't spoon-feed answers. → You must think, compare, and learn actively.</li>
+    </ol>
+  </div>
+
+  <h3>4. Author's Thinking (Mental Model)</h3>
+  <div class="card">
+    <p>The author believes:</p>
+    <p><strong>Trading success is not about copying one system, but understanding core principles + adapting to your personality.</strong></p>
+    <p>Key beliefs:</p>
+    <ul>
+      <li>Markets are complex → no single method fits all</li>
+      <li>Experience matters → learn from multiple experts</li>
+      <li>Similarities between winners are more important than differences</li>
+    </ul>
+    <p>The book is designed to train your judgment, not give you a formula.</p>
+  </div>
+
+  <h3>5. Why This Matters</h3>
+  <div class="card warn">
+    <p>Most beginners:</p>
+    <ul>
+      <li>Look for one perfect strategy</li>
+      <li>Try to copy a single trader</li>
+    </ul>
+    <p>This leads to confusion and failure.</p>
+    <p>This chapter solves that by teaching:</p>
+    <ul>
+      <li>There are multiple successful paths</li>
+      <li>But all winners share common foundations</li>
+    </ul>
+    <p>So instead of: <em>"Who is right?"</em><br>You start asking: <em>"What do they all agree on?"</em></p>
+  </div>
+
+  <h3>6. Structured View — How to Read This Book Effectively</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Step</th><th>What to Do</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Read all answers to a question</td><td>Get full perspective</td></tr>
+        <tr><td>2</td><td>Compare differences</td><td>Understand flexibility</td></tr>
+        <tr><td>3</td><td>Identify common points</td><td>Find core principles</td></tr>
+        <tr><td>4</td><td>Reflect personally</td><td>Fit to your style</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>7. Example / Analogy</h3>
+  <div class="card blue">
+    <p>Think of learning trading like learning medicine (relevant to your domain):</p>
+    <ul>
+      <li>One doctor says: focus on symptoms</li>
+      <li>Another says: focus on lab data</li>
+      <li>Another says: focus on history</li>
+    </ul>
+    <p>At first, it feels confusing.</p>
+    <p>But over time, you realize: all good doctors follow the same core logic — they just apply it differently.</p>
+    <p>Trading is the same.</p>
+  </div>
+
+  <h3>8. Common Misunderstanding</h3>
+  <div class="card bad">
+    <ul>
+      <li><strong>"I should follow one trader exactly."</strong> → Wrong. That ignores your personality and context.</li>
+      <li><strong>"Different answers mean confusion."</strong> → No. Differences show flexibility; similarities show truth.</li>
+      <li><strong>"This book will give me a system."</strong> → No. It gives understanding, not a fixed system.</li>
+    </ul>
+  </div>
+
+  <h3>9. Chapter Summary (Fast Revision)</h3>
+  <div class="card accent">
+    <ul>
+      <li>Book answers real trader questions</li>
+      <li>Uses multiple expert perspectives</li>
+      <li>Focus is on comparison and learning</li>
+      <li>No storytelling — pure practical content</li>
+      <li>Emphasis on core principles over methods</li>
+      <li>Readers must actively think and interpret</li>
+      <li>Success comes from aligning strategy with personality</li>
+      <li>Look for similarities among experts</li>
+    </ul>
+  </div>
+
+  <h3>10. Connection</h3>
+  <div class="card">
+    <p><strong>Connects Backward:</strong></p>
+    <ul>
+      <li>Builds on Minervini's earlier work (<em>Trade Like a Stock Market Wizard</em>)</li>
+      <li>Expands unanswered questions from traders</li>
+    </ul>
+    <p><strong>Connects Forward:</strong></p>
+    <ul>
+      <li>Sets the learning framework for the entire book</li>
+      <li>Prepares you to: compare answers, extract principles, avoid blind copying</li>
+    </ul>
+    <p>Without this mindset, later chapters will feel contradictory. With it, they become deeply insightful.</p>
+  </div>
+
+  <div class="quote">Final Insight: This chapter is not about trading. It is about how to learn trading correctly. That distinction is critical.</div>
+</section>
+
+<!-- ================= TAB 1 : TRADER COMPARISON MATRIX ================= -->
+<section class="panel" id="p2">
+  <h2 class="chapter">Trader Comparison Matrix</h2>
+  <p class="chapter-sub">Momentum Masters — Deep Insight Layer</p>
+
+  <h3>Core Purpose</h3>
+  <div class="card accent">
+    <p>This is where the book becomes powerful.</p>
+    <p>You stop seeing "answers". You start seeing patterns across experts.</p>
+    <p>The truth is not in one trader's answer... It is in what all of them agree on vs where they differ.</p>
+  </div>
+
+  <h3>High-Level View</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Dimension</th><th>Common Ground (ALL Agree)</th><th>Where They Differ</th></tr></thead>
+      <tbody>
+        <tr><td>Philosophy</td><td>Discipline, risk control, process</td><td>Style, aggressiveness</td></tr>
+        <tr><td>Stock Selection</td><td>Strength, leadership</td><td>Degree of fundamental focus</td></tr>
+        <tr><td>Entry</td><td>Proper setup, avoid chasing</td><td>Aggressive vs conservative timing</td></tr>
+        <tr><td>Position Sizing</td><td>Risk-based sizing</td><td>Concentrated vs diversified</td></tr>
+        <tr><td>Selling</td><td>Cut losses, protect gains</td><td>How long to hold winners</td></tr>
+        <tr><td>Market View</td><td>Follow trend</td><td>Speed of adapting</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>1. Philosophy (Deepest Layer)</h3>
+  <div class="card">
+    <h4>Agreement</h4>
+    <ul>
+      <li>Discipline &gt; intelligence</li>
+      <li>Losses are part of the game</li>
+      <li>No shortcuts</li>
+    </ul>
+    <h4>Difference</h4>
+    <ul>
+      <li>Some are more aggressive (push size, act faster)</li>
+      <li>Others are more conservative (wait longer, reduce risk)</li>
+    </ul>
+    <p><strong>Insight:</strong> All winners think similarly at core — but express it differently in execution.</p>
+  </div>
+
+  <h3>2. Stock Selection</h3>
+  <div class="card">
+    <h4>Agreement</h4>
+    <ul>
+      <li>Strong stocks outperform</li>
+      <li>Leaders, not laggards</li>
+      <li>Institutional demand is key</li>
+    </ul>
+    <h4>Difference</h4>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Trader Type</th><th>Approach</th></tr></thead>
+        <tbody>
+          <tr><td>Technical-heavy</td><td>Focus mostly on price strength</td></tr>
+          <tr><td>Hybrid</td><td>Combine price + earnings growth</td></tr>
+          <tr><td>Fundamental-leaning</td><td>Require strong earnings confirmation</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>Insight:</strong> All roads lead to strength, but filters differ.</p>
+  </div>
+
+  <h3>3. Entry Style</h3>
+  <div class="card">
+    <h4>Agreement</h4>
+    <ul>
+      <li>Wait for proper setup</li>
+      <li>Avoid chasing</li>
+      <li>Risk must be controlled</li>
+    </ul>
+    <h4>Difference</h4>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Style</th><th>Behavior</th></tr></thead>
+        <tbody>
+          <tr><td>Aggressive</td><td>Enters early near breakout</td></tr>
+          <tr><td>Conservative</td><td>Waits for confirmation</td></tr>
+          <tr><td>Opportunistic</td><td>Uses pullbacks</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>Insight:</strong> Same destination, different timing tolerance.</p>
+  </div>
+
+  <h3>4. Position Sizing</h3>
+  <div class="card">
+    <h4>Agreement</h4>
+    <ul>
+      <li>Risk-based sizing</li>
+      <li>Don't overexpose</li>
+      <li>Scale with confidence</li>
+    </ul>
+    <h4>Difference</h4>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Style</th><th>Behavior</th></tr></thead>
+        <tbody>
+          <tr><td>Concentrated</td><td>Few large positions</td></tr>
+          <tr><td>Balanced</td><td>Moderate diversification</td></tr>
+          <tr><td>Diversified</td><td>Many smaller positions</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h3>5. Selling Strategy</h3>
+  <div class="card">
+    <h4>Agreement</h4>
+    <ul>
+      <li>Cut losses quickly</li>
+      <li>Protect profits</li>
+      <li>Avoid emotional exits</li>
+    </ul>
+    <h4>Difference</h4>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Style</th><th>Behavior</th></tr></thead>
+        <tbody>
+          <tr><td>Quick profit taker</td><td>Books gains early</td></tr>
+          <tr><td>Trend follower</td><td>Holds for big moves</td></tr>
+          <tr><td>Hybrid</td><td>Partial profits + hold rest</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>Insight:</strong> Exit philosophy defines profit profile.</p>
+  </div>
+
+  <h3>6. Market Approach</h3>
+  <div class="card">
+    <h4>Agreement</h4>
+    <ul>
+      <li>Market direction is critical</li>
+      <li>Don't fight the trend</li>
+    </ul>
+    <h4>Difference</h4>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Style</th><th>Behavior</th></tr></thead>
+        <tbody>
+          <tr><td>Fast adapter</td><td>Quickly shifts exposure</td></tr>
+          <tr><td>Gradual adapter</td><td>Adjusts slowly</td></tr>
+          <tr><td>Defensive</td><td>Moves to cash early</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>Insight:</strong> All respect the market — response speed varies.</p>
+  </div>
+
+  <h3>Deep Pattern (Most Important)</h3>
+  <div class="card accent">
+    <h4>What is SAME across ALL traders?</h4>
+    <ul>
+      <li>Respect risk</li>
+      <li>Follow strength</li>
+      <li>Wait for setup</li>
+      <li>Cut losses fast</li>
+      <li>Stay disciplined</li>
+    </ul>
+    <h4>What is DIFFERENT?</h4>
+    <ul>
+      <li>Aggression level</li>
+      <li>Holding period</li>
+      <li>Position size concentration</li>
+    </ul>
+  </div>
+
+  <h3>Master Interpretation — Key Insight</h3>
+  <div class="card blue">
+    <p class="quote">The differences are style. The similarities are truth.</p>
+    <h4>How You Should Use This — Step Framework</h4>
+    <ol>
+      <li>Identify common principles → Non-negotiable</li>
+      <li>Observe differences → Style choices</li>
+      <li>Align with your personality → Personal system</li>
+    </ol>
+    <h4>Critical Warning</h4>
+    <ul>
+      <li><strong>Wrong approach:</strong> Copy one trader blindly</li>
+      <li><strong>Better but still flawed:</strong> Mix everything randomly</li>
+      <li><strong>Correct approach:</strong> Extract common truths, then build your own style around them</li>
+    </ul>
+  </div>
+
+  <h3>Analogy</h3>
+  <div class="card">
+    <p>All good doctors:</p>
+    <ul>
+      <li>Diagnose correctly</li>
+      <li>Treat safely</li>
+    </ul>
+    <p>But: some prefer aggressive treatment, others prefer a conservative approach.</p>
+    <p>Same science, different style. Trading = identical structure.</p>
+  </div>
+
+  <div class="quote">Final Distillation — If you remember ONLY this: Principles are fixed. Execution is flexible.</div>
+</section>
+
+<!-- ================= TAB 2 : TRADE FAILURE DIAGNOSIS ================= -->
+<section class="panel" id="p3">
+  <h2 class="chapter">Trade Failure Diagnosis Model</h2>
+  <p class="chapter-sub">Momentum Masters — Advanced Insight Layer</p>
+
+  <h3>Core Purpose</h3>
+  <div class="card accent">
+    <p>This is where real edge is built.</p>
+    <p>Not by winning trades — but by understanding why trades fail.</p>
+    <p><strong>A losing trade is not failure... An unanalyzed loss is failure.</strong></p>
+  </div>
+
+  <h3>First Principle</h3>
+  <div class="card blue">
+    <p>Every failed trade can be traced to <strong>ONE</strong> broken link in the trading chain.</p>
+  </div>
+
+  <h3>The Diagnosis Framework</h3>
+  <div class="pill-row">
+    <span class="pill">1. Stock Selection</span>
+    <span class="pill">2. Market Context</span>
+    <span class="pill">3. Setup Quality</span>
+    <span class="pill">4. Entry Timing</span>
+    <span class="pill">5. Position Sizing</span>
+    <span class="pill">6. Risk Management</span>
+    <span class="pill">7. Exit Execution</span>
+    <span class="pill">8. Psychology</span>
+  </div>
+  <p class="note">You must identify where exactly the breakdown happened.</p>
+
+  <h3>Step-by-Step Diagnosis</h3>
+
+  <div class="card bad">
+    <h4>1. Stock Selection Failure</h4>
+    <p><strong>Symptoms:</strong></p>
+    <ul>
+      <li>Stock never shows strength</li>
+      <li>Lags market or sector</li>
+      <li>Weak relative strength</li>
+    </ul>
+    <p><strong>Root Cause:</strong> Bought a weak/average stock</p>
+  </div>
+
+  <div class="card bad">
+    <h4>2. Market Context Failure</h4>
+    <p><strong>Symptoms:</strong></p>
+    <ul>
+      <li>Breakouts fail repeatedly</li>
+      <li>Good stocks don't move</li>
+    </ul>
+    <p><strong>Root Cause:</strong> Market was weak or uncertain. You traded against trend.</p>
+    <p><strong>Truth:</strong> You were fighting the environment.</p>
+  </div>
+
+  <div class="card bad">
+    <h4>3. Setup Quality Failure</h4>
+    <p><strong>Symptoms:</strong></p>
+    <ul>
+      <li>No clear base or pattern</li>
+      <li>Random entry without structure</li>
+    </ul>
+    <p><strong>Root Cause:</strong> Forced trade without proper setup</p>
+    <p><strong>Truth:</strong> There was no real opportunity — only impatience.</p>
+  </div>
+
+  <div class="card bad">
+    <h4>4. Entry Timing Failure</h4>
+    <p><strong>Symptoms:</strong></p>
+    <ul>
+      <li>Immediate drawdown after entry</li>
+      <li>Bought too early or too late</li>
+    </ul>
+    <p><strong>Root Cause:</strong> Entered before breakout OR chased after move</p>
+    <p><strong>Truth:</strong> Timing error, not idea error.</p>
+  </div>
+
+  <div class="card bad">
+    <h4>5. Position Sizing Failure</h4>
+    <p><strong>Symptoms:</strong></p>
+    <ul>
+      <li>Small mistake → large damage</li>
+      <li>Emotional stress during trade</li>
+    </ul>
+    <p><strong>Root Cause:</strong> Oversized position</p>
+    <p><strong>Truth:</strong> Risk was miscalculated.</p>
+  </div>
+
+  <div class="card bad">
+    <h4>6. Risk Management Failure</h4>
+    <p><strong>Symptoms:</strong></p>
+    <ul>
+      <li>Small loss becomes big loss</li>
+      <li>No clear exit point</li>
+    </ul>
+    <p><strong>Root Cause:</strong> No predefined stop. Ignored exit discipline.</p>
+    <p><strong>Truth:</strong> Loss was allowed to grow.</p>
+  </div>
+
+  <div class="card bad">
+    <h4>7. Exit Execution Failure</h4>
+    <p><strong>Symptoms:</strong></p>
+    <ul>
+      <li>Profit turned into loss</li>
+      <li>Sold too early or too late</li>
+    </ul>
+    <p><strong>Root Cause:</strong> No exit plan. Emotional decision-making.</p>
+    <p><strong>Truth:</strong> You mishandled the outcome.</p>
+  </div>
+
+  <div class="card bad">
+    <h4>8. Psychology Failure (Most Common)</h4>
+    <p><strong>Symptoms:</strong></p>
+    <ul>
+      <li>Fear, greed, hesitation</li>
+      <li>Breaking your own rules</li>
+    </ul>
+    <p><strong>Root Cause:</strong> Emotional override of system</p>
+    <p><strong>Truth:</strong> You knew what to do — but didn't do it.</p>
+  </div>
+
+  <h3>Structured Diagnosis Table</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Failure Type</th><th>Where It Occurs</th><th>Impact Level</th></tr></thead>
+      <tbody>
+        <tr><td>Stock selection</td><td>Before trade</td><td>High</td></tr>
+        <tr><td>Market context</td><td>Before trade</td><td>High</td></tr>
+        <tr><td>Setup quality</td><td>Before trade</td><td>High</td></tr>
+        <tr><td>Entry timing</td><td>At entry</td><td>Medium</td></tr>
+        <tr><td>Position sizing</td><td>At entry</td><td>High</td></tr>
+        <tr><td>Risk management</td><td>During trade</td><td class="no">Critical</td></tr>
+        <tr><td>Exit execution</td><td>During/after trade</td><td>High</td></tr>
+        <tr><td>Psychology</td><td>Everywhere</td><td class="no">Extreme</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Master Diagnostic Flow</h3>
+  <div class="flow">
+    <div class="flow-step">Did stock have strength?</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">Was market supportive?</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">Was setup valid?</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">Was entry correct?</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">Was position size appropriate?</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">Was risk predefined?</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">Was exit executed properly?</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">Did psychology interfere?</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step highlight">First "NO" = Root cause of failure</div>
+  </div>
+
+  <h3>Example (Clinical Breakdown)</h3>
+  <div class="card">
+    <p><strong>Scenario:</strong> You bought a breakout. Stock failed and fell 15%.</p>
+    <p><strong>Diagnosis:</strong></p>
+    <ul>
+      <li>Stock? Strong</li>
+      <li>Market? Weak</li>
+      <li><strong>Root cause = Market context failure</strong></li>
+    </ul>
+  </div>
+  <div class="card">
+    <p><strong>Another Scenario:</strong> Stock goes up 20%. You exit at 5%.</p>
+    <p><strong>Diagnosis:</strong> Everything correct until exit.</p>
+    <p><strong>Failure = Exit execution (fear-based selling)</strong></p>
+  </div>
+
+  <h3>Meta-Insight (Very Important)</h3>
+  <div class="card warn">
+    <p>Most traders misdiagnose failures. They say:</p>
+    <ul>
+      <li>"Market is bad"</li>
+      <li>"Stock was wrong"</li>
+    </ul>
+    <p><strong>Reality:</strong> Often it is:</p>
+    <ul>
+      <li>Entry error</li>
+      <li>Sizing mistake</li>
+      <li>Psychological weakness</li>
+    </ul>
+  </div>
+
+  <h3>Critical Rule</h3>
+  <div class="card accent">
+    <p>Only <strong>ONE</strong> primary cause per trade.</p>
+    <p>Do NOT say: "Everything went wrong." That is intellectual laziness.</p>
+    <h4>High-Precision Thinking</h4>
+    <ul>
+      <li><strong>Bad thinking:</strong> "Trade failed"</li>
+      <li><strong>Professional thinking:</strong> "Trade failed due to entry timing error in a weak market with oversized position"</li>
+    </ul>
+  </div>
+
+  <h3>Post-Trade Template (Use This)</h3>
+  <div class="card blue">
+    <p>After every trade, ask:</p>
+    <ol>
+      <li>Was stock a leader?</li>
+      <li>Was market supportive?</li>
+      <li>Was setup valid?</li>
+      <li>Was entry correct?</li>
+      <li>Was size appropriate?</li>
+      <li>Was risk predefined?</li>
+      <li>Was exit disciplined?</li>
+      <li>Did emotions interfere?</li>
+    </ol>
+  </div>
+
+  <div class="quote">Final Distillation: You don't improve by trading more... You improve by diagnosing better.</div>
+</section>
+
+<!-- ================= TAB 3 : TRADE JOURNAL SYSTEM ================= -->
+<section class="panel" id="p4">
+  <h2 class="chapter">Trade Journal System (Professional-Grade)</h2>
+  <p class="chapter-sub">Built on Momentum Masters + Diagnosis Model</p>
+
+  <h3>Core Purpose</h3>
+  <div class="card accent">
+    <p>This is not a diary.</p>
+    <p>This is a diagnostic instrument designed to convert trading into measurable, improvable performance.</p>
+    <p>You are not tracking trades... You are tracking <strong>decision quality</strong>.</p>
+  </div>
+
+  <h3>System Structure (3 Layers)</h3>
+  <div class="pill-row">
+    <span class="pill">Layer 1 → Trade Data (What happened)</span>
+    <span class="pill">Layer 2 → Decision Scoring (How well you executed)</span>
+    <span class="pill">Layer 3 → Failure Tagging (Why it failed)</span>
+  </div>
+
+  <h3>Layer 1: Trade Data (Objective Facts)</h3>
+  <p class="note">Capture ONLY facts (no opinions).</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Field</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td>Date</td><td>12 Sep 2026</td></tr>
+        <tr><td>Stock</td><td>XYZ Ltd</td></tr>
+        <tr><td>Setup Type</td><td>Breakout / Pullback</td></tr>
+        <tr><td>Market Condition</td><td>Uptrend / Sideways / Downtrend</td></tr>
+        <tr><td>Entry Price</td><td>$50</td></tr>
+        <tr><td>Exit Price</td><td>$54</td></tr>
+        <tr><td>Position Size</td><td>15% capital</td></tr>
+        <tr><td>Stop Loss</td><td>$48</td></tr>
+        <tr><td>Outcome</td><td>+8%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">This is the raw data layer (no interpretation yet).</p>
+
+  <h3>Layer 2: Decision Scoring (0–2 System)</h3>
+  <p>Each trade is scored across 8 dimensions:</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Component</th><th>Score</th></tr></thead>
+      <tbody>
+        <tr><td>Stock Selection</td><td>0 / 1 / 2</td></tr>
+        <tr><td>Market Context</td><td>0 / 1 / 2</td></tr>
+        <tr><td>Setup Quality</td><td>0 / 1 / 2</td></tr>
+        <tr><td>Entry Timing</td><td>0 / 1 / 2</td></tr>
+        <tr><td>Position Sizing</td><td>0 / 1 / 2</td></tr>
+        <tr><td>Risk Management</td><td>0 / 1 / 2</td></tr>
+        <tr><td>Exit Execution</td><td>0 / 1 / 2</td></tr>
+        <tr><td>Psychology Control</td><td>0 / 1 / 2</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>Scoring Logic</h4>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Score</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td class="ok">2</td><td>Perfect execution</td></tr>
+        <tr><td>1</td><td>Acceptable (minor flaw)</td></tr>
+        <tr><td class="no">0</td><td>Clear mistake</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>Total Score</h4>
+  <p><strong>Max Score = 16</strong></p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Score</th><th>Quality</th></tr></thead>
+      <tbody>
+        <tr><td>13–16</td><td>Professional-grade trade</td></tr>
+        <tr><td>9–12</td><td>Average execution</td></tr>
+        <tr><td>8 or below</td><td>Poor trade (needs review)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Layer 3: Failure Tagging (Most Important)</h3>
+  <p>Every trade must have <strong>ONE</strong> primary failure tag.</p>
+  <div class="pill-row">
+    <span class="pill">STOCK</span>
+    <span class="pill">MARKET</span>
+    <span class="pill">SETUP</span>
+    <span class="pill">ENTRY</span>
+    <span class="pill">SIZE</span>
+    <span class="pill">RISK</span>
+    <span class="pill">EXIT</span>
+    <span class="pill">PSYCHOLOGY</span>
+  </div>
+  <div class="card warn">
+    <p><strong>Rule:</strong> Even profitable trades can have failure tags.</p>
+    <p><strong>Example:</strong> Profit +10%, but exited too early → Tag = EXIT FAILURE</p>
+  </div>
+
+  <h3>Full Journal Template (Ready to Use)</h3>
+  <div class="card blue">
+    <h4>Trade Record</h4>
+    <p>Date: ____________ &nbsp; Stock: ____________ &nbsp; Setup: ____________ &nbsp; Market Condition: ____________</p>
+    <p>Entry: ______ &nbsp; Exit: ______ &nbsp; Stop Loss: ______ &nbsp; Position Size: ______ &nbsp; Outcome (%): ______</p>
+
+    <h4>Decision Scoring</h4>
+    <p>Stock Selection: ___ &nbsp; Market Context: ___ &nbsp; Setup Quality: ___ &nbsp; Entry Timing: ___</p>
+    <p>Position Size: ___ &nbsp; Risk Management: ___ &nbsp; Exit Execution: ___ &nbsp; Psychology: ___</p>
+    <p><strong>TOTAL SCORE: ______</strong></p>
+    <p><strong>FAILURE TAG: ______</strong></p>
+    <p><strong>KEY LESSON (1 LINE ONLY):</strong> ______________________________</p>
+  </div>
+
+  <h3>How to Use This System (Critical)</h3>
+  <ol class="step-list">
+    <li><strong>STEP 1</strong> → Record every trade (no skipping losers)</li>
+    <li><strong>STEP 2</strong> → Score honestly (no ego protection)</li>
+    <li><strong>STEP 3</strong> → Assign ONE failure (no multiple excuses)</li>
+    <li><strong>STEP 4</strong> → Track patterns weekly</li>
+  </ol>
+
+  <h3>Weekly Analysis (Real Edge)</h3>
+  <p>At end of week: count failure tags.</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Failure Type</th><th>Frequency</th></tr></thead>
+      <tbody>
+        <tr><td>ENTRY</td><td>5</td></tr>
+        <tr><td>PSYCHOLOGY</td><td>3</td></tr>
+        <tr><td>SIZE</td><td>1</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>Highest frequency = your biggest weakness</strong></p>
+
+  <h3>Insight Engine — Example Pattern</h3>
+  <div class="card">
+    <p>70% failures = ENTRY</p>
+    <p><strong>Problem is NOT:</strong></p>
+    <ul>
+      <li>Stock selection</li>
+      <li>Market</li>
+    </ul>
+    <p><strong>Problem is:</strong> Timing</p>
+  </div>
+
+  <h3>Critical Truths</h3>
+  <div class="card accent">
+    <ol>
+      <li>Profit ≠ Good Trade — bad process can still make money</li>
+      <li>Loss ≠ Bad Trade — good process can still lose</li>
+      <li>Score &gt; Outcome</li>
+    </ol>
+  </div>
+
+  <h3>What to Track Over Time</h3>
+  <ol>
+    <li>Average Score → Measures skill improvement</li>
+    <li>Failure Distribution → Identifies weak areas</li>
+    <li>Psychology Score Trend → Tracks emotional control</li>
+  </ol>
+
+  <h3>Example (High Clarity)</h3>
+  <div class="card">
+    <p><strong>Trade:</strong></p>
+    <ul>
+      <li>Profit: +12%</li>
+      <li>Score: 10/16</li>
+      <li>Failure Tag: EXIT</li>
+    </ul>
+    <p><strong>Meaning:</strong> You made money, but the system is flawed. Improvement needed.</p>
+  </div>
+
+  <div class="quote">Final Distillation: You don't improve by trading more. You improve by measuring better.</div>
+</section>
+
+<!-- ================= TAB 4 : CHAPTER 1 ================= -->
+<section class="panel" id="p5">
+  <h2 class="chapter">Chapter 1 — Mindset, Experience &amp; the Timeless Market</h2>
+  <p class="chapter-sub">Traders' backgrounds, routines, fairness of markets, and how long success takes</p>
+
+  <h3>1. Core Message (Most Important)</h3>
+  <div class="card accent">
+    <p>Top traders don't constantly reinvent their methods — they refine timeless principles based on supply and demand.</p>
+    <p>Success in trading comes from discipline, preparation, experience, and self-awareness, not shortcuts or talent alone.</p>
+  </div>
+
+  <h3>2. Simple Explanation</h3>
+  <div class="card">
+    <p>This chapter is a collection of answers from four expert traders about:</p>
+    <ul>
+      <li>How their trading evolved</li>
+      <li>Their daily routine</li>
+      <li>Whether markets are fair</li>
+      <li>How long it takes to succeed</li>
+      <li>Whether anyone can become a good trader</li>
+    </ul>
+    <p><strong>Key takeaway in simple terms:</strong> Good trading is not about doing something new every year. It is about doing simple things consistently and correctly.</p>
+    <p>They all say:</p>
+    <ul>
+      <li>Markets change in appearance, but human behavior doesn't</li>
+      <li>Chart patterns still work because they reflect supply and demand</li>
+      <li>Most success comes from discipline and preparation, not intelligence</li>
+    </ul>
+  </div>
+
+  <h3>3. Key Ideas / Concepts</h3>
+  <div class="card blue">
+    <ol>
+      <li><strong>Markets Are Timeless</strong> — Chart patterns and price behavior repeat over decades, because human emotions (fear/greed) don't change.</li>
+      <li><strong>Refinement &gt; Reinvention</strong> — Top traders don't change strategies drastically. → They improve execution over time.</li>
+      <li><strong>Preparation Is Critical</strong> — Most work is done before market opens. → Decisions should be planned, not emotional.</li>
+      <li><strong>Experience Is Essential</strong> — Learning trading takes years of mistakes. → There is no shortcut.</li>
+      <li><strong>Discipline Over Ego</strong> — Big turning point = accepting losses and controlling ego. → Ego destroys traders.</li>
+      <li><strong>Small Traders Have an Advantage</strong> — Individuals can move faster than institutions. → Flexibility is a major edge.</li>
+      <li><strong>Market Is Not Rigged</strong> — Blaming the market = excuse for failure. → Responsibility is key.</li>
+      <li><strong>Long-Term Thinking Matters</strong> — Big money comes from holding winners, not overtrading.</li>
+      <li><strong>Talent Helps, But Isn't Everything</strong> — Skills can be learned with effort and discipline.</li>
+      <li><strong>You Can Start Small</strong> — Compounding works — even small accounts can grow big.</li>
+    </ol>
+  </div>
+
+  <h3>4. Author's Thinking (Mental Model)</h3>
+  <div class="card">
+    <p>The traders share a very clear philosophy:</p>
+    <p><strong>Trading is a skill-based discipline, not luck or prediction.</strong></p>
+    <p>Their mental model includes:</p>
+    <ul>
+      <li>Markets = supply &amp; demand mechanism (timeless)</li>
+      <li>Success = process + discipline + psychology</li>
+      <li>Losses = part of learning</li>
+      <li>Preparation reduces emotional mistakes</li>
+    </ul>
+    <p>They strongly reject:</p>
+    <ul>
+      <li>Excuses ("market is rigged")</li>
+      <li>Overconfidence</li>
+      <li>Shortcut mindset</li>
+    </ul>
+  </div>
+
+  <h3>5. Why This Matters</h3>
+  <div class="card warn">
+    <p>Most beginners:</p>
+    <ul>
+      <li>Keep changing strategies</li>
+      <li>Trade emotionally</li>
+      <li>Expect quick success</li>
+    </ul>
+    <p>This chapter corrects that thinking.</p>
+    <p>It teaches:</p>
+    <ul>
+      <li>Why consistency beats complexity</li>
+      <li>Why preparation reduces mistakes</li>
+      <li>Why patience is required</li>
+    </ul>
+    <p>Without this foundation, all technical knowledge later becomes useless.</p>
+  </div>
+
+  <h3>6. Structured View — Trading Success Framework</h3>
+  <div class="flow">
+    <div class="flow-step">Learn basic concepts</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">Make mistakes</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">Analyze mistakes</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">Build discipline</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">Refine process</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step highlight">Gain consistency</div>
+  </div>
+  <p class="note">This cycle repeats for years.</p>
+
+  <h3>7. Example / Analogy</h3>
+  <div class="card blue">
+    <p><strong>Analogy: Surgery Training (Fits Your Domain)</strong></p>
+    <p>A new surgeon:</p>
+    <ul>
+      <li>Reads books → understands theory</li>
+      <li>Performs surgeries → makes mistakes</li>
+      <li>Learns from errors → improves</li>
+    </ul>
+    <p>Eventually: becomes precise, calm, disciplined.</p>
+    <p>Trading is identical. You cannot become expert by reading alone or watching others. You must experience and adapt.</p>
+  </div>
+
+  <h3>8. Common Misunderstanding</h3>
+  <div class="card bad">
+    <ul>
+      <li><strong>"Markets have changed, old methods don't work"</strong> → Wrong. Core principles remain same.</li>
+      <li><strong>"I need a new strategy to succeed"</strong> → No. You need better execution.</li>
+      <li><strong>"Big players control everything"</strong> → Not true. Individuals have flexibility advantage.</li>
+      <li><strong>"I'll succeed quickly"</strong> → Unrealistic. Takes years.</li>
+    </ul>
+  </div>
+
+  <h3>9. Chapter Summary (5–8 bullets)</h3>
+  <div class="card accent">
+    <ul>
+      <li>Trading principles are timeless (supply &amp; demand)</li>
+      <li>Top traders refine, not reinvent</li>
+      <li>Preparation happens before market hours</li>
+      <li>Discipline and ego control are critical</li>
+      <li>Experience (mistakes) is necessary for growth</li>
+      <li>Individual traders have speed advantage</li>
+      <li>Market is not rigged — mindset matters</li>
+      <li>Success takes years, not months</li>
+    </ul>
+  </div>
+
+  <h3>10. Connection</h3>
+  <div class="card">
+    <p><strong>With Previous Chapter:</strong> Applies the learning method explained earlier — compare answers, find common truths.</p>
+    <p><strong>With Next Chapters:</strong> Leads into stock selection, risk management, psychology. Everything later builds on: discipline + preparation + experience.</p>
+  </div>
+
+  <div class="quote">Final Insight: The edge in trading is not in the market... It is in your behavior and discipline.</div>
+</section>
+
+<!-- ================= TAB 5 : CHAPTER 2 ================= -->
+<section class="panel" id="p6">
+  <h2 class="chapter">Chapter 2 — Stock Selection</h2>
+  <p class="chapter-sub">Finding stocks that can actually go up a lot</p>
+
+  <h3>1. Core Message (Most Important)</h3>
+  <div class="card accent">
+    <p>Great stocks are not found by guessing — they are identified through strength, price action, and institutional demand.</p>
+    <p>The best traders focus on leading stocks showing real momentum, not cheap or weak ones.</p>
+  </div>
+
+  <h3>2. Simple Explanation</h3>
+  <div class="card">
+    <p>This chapter answers a very important question: <strong>How do you find stocks that can go up a lot?</strong></p>
+    <p>All traders give slightly different methods, but they agree on key things:</p>
+    <ul>
+      <li>Don't buy stocks just because they are cheap</li>
+      <li>Focus on stocks that are already showing strength</li>
+      <li>Look for big buyers (institutions) entering the stock</li>
+      <li>Timing matters — buying the right stock at the wrong time still leads to losses</li>
+    </ul>
+    <p><strong>In simple terms:</strong> Strong stocks tend to get stronger. Weak stocks tend to stay weak.</p>
+  </div>
+
+  <h3>3. Key Ideas / Concepts</h3>
+  <div class="card blue">
+    <ol>
+      <li><strong>Relative Strength (RS)</strong> — Stocks that are outperforming the market are more likely to continue performing. → Strength attracts more buyers.</li>
+      <li><strong>Price Action is Critical</strong> — Price movement tells the real story. → Ignore noise; focus on what price is doing.</li>
+      <li><strong>Growth Matters (Not Just Momentum)</strong> — Some traders (like Ryan) insist the stock must have strong earnings, not just rising price.</li>
+      <li><strong>Volume = Institutional Activity</strong> — High volume indicates big players are buying. → This drives large price moves.</li>
+      <li><strong>Avoid Chasing Stocks</strong> — Buying after a big move increases risk and reduces reward.</li>
+      <li><strong>Liquidity Matters</strong> — You must be able to enter and exit easily. → Low volume stocks require smaller position sizes.</li>
+      <li><strong>Avoid Bottom Fishing</strong> — Do not try to buy falling stocks. → Most big winners come from strength, not weakness.</li>
+      <li><strong>High Price ≠ Expensive</strong> — Higher-priced stocks are often better quality. → Cheap stocks are risky and often fail.</li>
+      <li><strong>Leaders Lead First</strong> — Strong stocks move before sectors become obvious. → Focus on individual stock strength first.</li>
+      <li><strong>Volume Still Works (Even with Dark Pools)</strong> — Despite market changes, volume remains reliable. → It still reflects supply and demand.</li>
+    </ol>
+  </div>
+
+  <h3>4. Author's Thinking (Mental Model)</h3>
+  <div class="card">
+    <p>The traders operate on a clear belief:</p>
+    <p class="quote">"The market rewards strength, not weakness."</p>
+    <p>Their mental framework:</p>
+    <ul>
+      <li>Strong stocks = institutional demand</li>
+      <li>Institutions drive big moves</li>
+      <li>Price + volume = truth</li>
+      <li>Fundamentals (earnings) support sustainability</li>
+    </ul>
+    <p>They reject:</p>
+    <ul>
+      <li>Buying cheap stocks</li>
+      <li>Bottom fishing</li>
+      <li>Chasing extended moves</li>
+    </ul>
+  </div>
+
+  <h3>5. Why This Matters</h3>
+  <div class="card warn">
+    <p>Most beginners:</p>
+    <ul>
+      <li>Buy "cheap" stocks</li>
+      <li>Try to catch bottoms</li>
+      <li>Chase after big moves</li>
+    </ul>
+    <p>This leads to losses.</p>
+    <p>This chapter fixes that by teaching: where real opportunities exist, and how to identify strong stocks early.</p>
+    <p><strong>If stock selection is wrong → everything else fails.</strong></p>
+  </div>
+
+  <h3>6. Structured View — Strong vs Weak Stock Characteristics</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Feature</th><th>Strong Stocks</th><th>Weak Stocks</th></tr></thead>
+      <tbody>
+        <tr><td>Price trend</td><td class="ok">Uptrend</td><td class="no">Downtrend</td></tr>
+        <tr><td>Volume</td><td class="ok">Increasing on up moves</td><td class="no">Increasing on down moves</td></tr>
+        <tr><td>Relative strength</td><td class="ok">High</td><td class="no">Low</td></tr>
+        <tr><td>Institutional interest</td><td class="ok">Present</td><td class="no">Absent</td></tr>
+        <tr><td>Behavior</td><td class="ok">Leads market</td><td class="no">Lags market</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>7. Example / Analogy</h3>
+  <div class="card blue">
+    <p><strong>Medical Analogy</strong></p>
+    <p>Think of stocks like patients:</p>
+    <ul>
+      <li>Strong stock = healthy patient recovering quickly</li>
+      <li>Weak stock = critical patient deteriorating</li>
+    </ul>
+    <p>Which one has better survival chances?</p>
+    <p>You don't choose the sickest patient expecting miracle recovery. You choose the one already showing signs of strength.</p>
+  </div>
+
+  <h3>8. Common Misunderstanding</h3>
+  <div class="card bad">
+    <ul>
+      <li><strong>"Cheap stocks give higher returns"</strong> → False. They often go to zero.</li>
+      <li><strong>"If it has fallen a lot, it must go up"</strong> → No. It may fall more.</li>
+      <li><strong>"More shares = more profit"</strong> → Wrong thinking. Focus on percentage gain.</li>
+      <li><strong>"Sector first, then stock"</strong> → Often too late. Leaders move first.</li>
+    </ul>
+  </div>
+
+  <h3>9. Chapter Summary (5–8 bullets)</h3>
+  <div class="card accent">
+    <ul>
+      <li>Focus on strong, leading stocks</li>
+      <li>Use price and volume as primary signals</li>
+      <li>Relative strength is a key filter</li>
+      <li>Avoid bottom fishing</li>
+      <li>High-priced stocks are often safer</li>
+      <li>Liquidity is important for risk control</li>
+      <li>Institutions drive major moves</li>
+      <li>Timing matters — don't chase</li>
+    </ul>
+  </div>
+
+  <h3>10. Connection</h3>
+  <div class="card">
+    <p><strong>With Chapter 1:</strong> Applies discipline and preparation to stock selection. Reinforces idea of following process, not emotions.</p>
+    <p><strong>With Next Chapters:</strong> Leads into position sizing, entry timing, risk management. Stock selection = foundation of the entire trading process.</p>
+  </div>
+
+  <div class="quote">Final Insight: You don't find winners by looking for what is cheap... You find them by recognizing what is already in demand.</div>
+</section>
+
+<!-- ================= TAB 6 : CHAPTER 3 ================= -->
+<section class="panel" id="p7">
+  <h2 class="chapter">Chapter 3 — Position Sizing</h2>
+  <p class="chapter-sub">The bridge between good ideas and actual performance</p>
+
+  <h3>1. Core Message (Most Important)</h3>
+  <div class="card accent">
+    <p>Your success is not just about picking the right stock — it's about how much you invest in each idea.</p>
+    <p>Position sizing is the bridge between good ideas and actual performance.</p>
+  </div>
+
+  <h3>2. Simple Explanation</h3>
+  <div class="card">
+    <p>Even if you pick great stocks:</p>
+    <ul>
+      <li>If you invest too little → gains don't matter</li>
+      <li>If you invest too much → one mistake can destroy you</li>
+    </ul>
+    <p>So traders focus on: <strong>How big should each trade be?</strong></p>
+    <p>Top traders:</p>
+    <ul>
+      <li>Increase size when things are working</li>
+      <li>Reduce size when uncertain</li>
+      <li>Never risk too much on one trade</li>
+    </ul>
+    <p><strong>Simple idea:</strong> Don't treat every trade equally. Size should depend on confidence + risk.</p>
+  </div>
+
+  <h3>3. Key Ideas / Concepts</h3>
+  <div class="card blue">
+    <ol>
+      <li><strong>Not All Trades Are Equal</strong> — Some setups are stronger than others. → Bigger size for high-quality setups.</li>
+      <li><strong>Risk First, Not Profit</strong> — Position size is based on how much you can lose. → Control downside before thinking of upside.</li>
+      <li><strong>Start Small, Then Build</strong> — Many traders begin with smaller positions. → Increase only if trade works.</li>
+      <li><strong>Concentration vs Diversification</strong> — Some traders concentrate (few big positions), others diversify (many small positions). → Both can work if managed properly.</li>
+      <li><strong>Adjust Based on Market Conditions</strong> — Strong market → larger positions. Weak/uncertain market → smaller positions.</li>
+      <li><strong>Liquidity Matters</strong> — Position size must match stock volume. → You should be able to exit easily.</li>
+      <li><strong>Pyramiding (Adding to Winners)</strong> — Increase position only after stock moves in your favor. → Never average down.</li>
+    </ol>
+  </div>
+
+  <h3>4. Author's Thinking (Mental Model)</h3>
+  <div class="card">
+    <p>The traders think like risk managers first, traders second:</p>
+    <p class="quote">"How much can I lose?" is more important than "How much can I make?"</p>
+    <p>Their approach:</p>
+    <ul>
+      <li>Protect capital first</li>
+      <li>Scale exposure based on confidence</li>
+      <li>Let winners grow, cut losers quickly</li>
+    </ul>
+    <p>They avoid:</p>
+    <ul>
+      <li>All-in bets</li>
+      <li>Equal allocation to all trades</li>
+      <li>Emotional sizing</li>
+    </ul>
+  </div>
+
+  <h3>5. Why This Matters</h3>
+  <div class="card warn">
+    <p>Many traders:</p>
+    <ul>
+      <li>Focus only on stock selection</li>
+      <li>Ignore position sizing</li>
+    </ul>
+    <p>This leads to:</p>
+    <ul>
+      <li>Overexposure → big losses</li>
+      <li>Underexposure → missed opportunities</li>
+    </ul>
+    <p>Even with a 50% win rate, correct sizing can make you profitable.</p>
+  </div>
+
+  <h3>6. Structured View — Position Sizing Logic</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Situation</th><th>Position Size</th></tr></thead>
+      <tbody>
+        <tr><td>High conviction + strong setup</td><td>Larger position</td></tr>
+        <tr><td>Moderate setup</td><td>Medium position</td></tr>
+        <tr><td>Uncertain market</td><td>Small position</td></tr>
+        <tr><td>Low liquidity stock</td><td>Smaller position</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>7. Example / Analogy</h3>
+  <div class="card blue">
+    <p><strong>Medical Analogy (Dosage)</strong></p>
+    <p>Think of position sizing like giving medicine:</p>
+    <ul>
+      <li>Too little dose → no effect</li>
+      <li>Too much dose → dangerous</li>
+      <li>Correct dosage = optimal outcome</li>
+    </ul>
+    <p>Same in trading: right size = controlled risk + meaningful returns.</p>
+  </div>
+
+  <h3>8. Common Misunderstanding</h3>
+  <div class="card bad">
+    <ul>
+      <li><strong>"More conviction = go all in"</strong> → Dangerous thinking</li>
+      <li><strong>"All trades should have equal size"</strong> → Ignores risk differences</li>
+      <li><strong>"Average down to reduce loss"</strong> → Increases risk, not reduces it</li>
+      <li><strong>"Big positions = big profits"</strong> → Also means big losses</li>
+    </ul>
+  </div>
+
+  <h3>9. Chapter Summary (5–8 bullets)</h3>
+  <div class="card accent">
+    <ul>
+      <li>Position sizing determines real profitability</li>
+      <li>Risk management comes before profit</li>
+      <li>Not all trades deserve equal capital</li>
+      <li>Start small, increase when right</li>
+      <li>Adjust size based on market conditions</li>
+      <li>Liquidity affects position size</li>
+      <li>Add to winners, not losers</li>
+      <li>Avoid overexposure</li>
+    </ul>
+  </div>
+
+  <h3>10. Connection</h3>
+  <div class="card">
+    <p><strong>With Previous Chapter (Stock Selection):</strong> Good stock + wrong size = poor outcome. Position sizing converts ideas into results.</p>
+    <p><strong>With Next Chapters:</strong> Leads into technical analysis (timing entries) and risk management (protecting capital). Position sizing = execution layer of trading.</p>
+  </div>
+
+  <div class="quote">Final Insight: You don't make money just by being right... You make money by being right with the right size.</div>
+</section>
+
+<!-- ================= TAB 7 : CHAPTER 4 ================= -->
+<section class="panel" id="p8">
+  <h2 class="chapter">Chapter 4 — Technical Analysis</h2>
+  <p class="chapter-sub">Reading supply and demand through price and volume</p>
+
+  <h3>1. Core Message (Most Important)</h3>
+  <div class="card accent">
+    <p>Technical analysis is not about predicting the future — it is about reading supply and demand through price and volume.</p>
+    <p>Charts help you understand what is happening now, so you can act with clarity instead of emotion.</p>
+  </div>
+
+  <h3>2. Simple Explanation</h3>
+  <div class="card">
+    <p>This chapter explains how traders use charts to decide when to buy and sell.</p>
+    <p>All four traders strongly agree on one thing:</p>
+    <ul>
+      <li>Price and volume are the most reliable information available</li>
+      <li>Everything else (news, opinions, stories) can be misleading</li>
+    </ul>
+    <p><strong>In simple terms:</strong></p>
+    <ul>
+      <li>If price is going up with strong volume → buyers are in control</li>
+      <li>If price is falling with high volume → sellers are in control</li>
+    </ul>
+    <p>Charts are just a visual representation of this battle.</p>
+  </div>
+
+  <h3>3. Key Ideas / Concepts</h3>
+  <div class="card blue">
+    <ol>
+      <li><strong>Price is Truth</strong> — Price reflects all available information. → Focus on what the stock is doing, not what people say.</li>
+      <li><strong>Volume Confirms Moves</strong> — Volume shows strength behind price movement. → Big moves need big participation.</li>
+      <li><strong>Chart Patterns Repeat</strong> — Patterns exist because human behavior repeats. → Fear and greed create similar structures over time.</li>
+      <li><strong>Breakouts &amp; Bases</strong> — Stocks often consolidate, then break out of that base.</li>
+      <li><strong>Pullbacks Are Normal</strong> — Stocks don't go straight up. → Healthy pullbacks offer opportunities.</li>
+      <li><strong>Timing Matters</strong> — Even a great stock can fail if bought at the wrong time. → Entry point is critical.</li>
+      <li><strong>Noise vs Signal</strong> — Short-term price moves can be misleading. → Focus on meaningful patterns, not random fluctuations.</li>
+    </ol>
+  </div>
+
+  <h3>4. Author's Thinking (Mental Model)</h3>
+  <div class="card">
+    <p>The traders believe:</p>
+    <p class="quote">"Charts are not predictions — they are evidence of behavior."</p>
+    <p>Their mindset:</p>
+    <ul>
+      <li>Market = continuous auction</li>
+      <li>Price = final decision of all participants</li>
+      <li>Volume = intensity of that decision</li>
+    </ul>
+    <p>They trust: what the market is doing.</p>
+    <p>They distrust: opinions, news, predictions.</p>
+  </div>
+
+  <h3>5. Why This Matters</h3>
+  <div class="card warn">
+    <p>Most traders:</p>
+    <ul>
+      <li>Follow news</li>
+      <li>Listen to tips</li>
+      <li>React emotionally</li>
+    </ul>
+    <p>This creates poor decisions.</p>
+    <p>Technical analysis solves this by:</p>
+    <ul>
+      <li>Providing objective signals</li>
+      <li>Reducing emotional bias</li>
+    </ul>
+    <p>Without chart understanding, timing becomes guesswork.</p>
+  </div>
+
+  <h3>6. Structured View — Price-Volume Interpretation</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Situation</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>Price ↑ + Volume ↑</td><td class="ok">Strong buying (bullish)</td></tr>
+        <tr><td>Price ↑ + Volume ↓</td><td class="no">Weak move (caution)</td></tr>
+        <tr><td>Price ↓ + Volume ↑</td><td class="no">Strong selling (bearish)</td></tr>
+        <tr><td>Price ↓ + Volume ↓</td><td>Lack of interest</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>7. Example / Analogy</h3>
+  <div class="card blue">
+    <p><strong>Traffic Analogy</strong></p>
+    <p>Think of price like cars moving — speed (price) + number of cars (volume).</p>
+    <ul>
+      <li>Speed ↑ and many cars → strong movement</li>
+      <li>Speed ↑ but few cars → weak, may stop</li>
+    </ul>
+  </div>
+
+  <h3>8. Common Misunderstanding</h3>
+  <div class="card bad">
+    <ul>
+      <li><strong>"Charts predict the future"</strong> → No, they show current behavior</li>
+      <li><strong>"More indicators = better decisions"</strong> → Often creates confusion</li>
+      <li><strong>"Short-term moves are important"</strong> → Many are just noise</li>
+      <li><strong>"News drives price"</strong> → Often price moves before news</li>
+    </ul>
+  </div>
+
+  <h3>9. Chapter Summary (5–8 bullets)</h3>
+  <div class="card accent">
+    <ul>
+      <li>Price reflects all information</li>
+      <li>Volume confirms strength of moves</li>
+      <li>Chart patterns repeat due to human behavior</li>
+      <li>Breakouts follow consolidation phases</li>
+      <li>Pullbacks are normal and useful</li>
+      <li>Timing entry is critical</li>
+      <li>Ignore noise, focus on meaningful signals</li>
+      <li>Charts provide objective decision-making</li>
+    </ul>
+  </div>
+
+  <h3>10. Connection</h3>
+  <div class="card">
+    <p><strong>With Previous Chapter (Position Sizing):</strong> Technical analysis helps decide when to deploy capital.</p>
+    <p><strong>With Next Chapters:</strong> Leads into fundamentals (why stocks move), market direction, entry and risk management. Technical analysis = timing tool of trading.</p>
+  </div>
+
+  <div class="quote">Final Insight: The market doesn't reward opinions... It rewards those who can read what is actually happening.</div>
+</section>
+
+<!-- ================= TAB 8 : CHAPTER 5 ================= -->
+<section class="panel" id="p9">
+  <h2 class="chapter">Chapter 5 — Fundamentals</h2>
+  <p class="chapter-sub">Earnings and business quality inside momentum investing</p>
+
+  <h3>1. Core Message (Most Important)</h3>
+  <div class="card accent">
+    <p>The biggest winning stocks are not just technically strong — they are backed by real business growth, especially strong earnings.</p>
+    <p>Fundamentals provide the fuel, while technicals provide the timing.</p>
+  </div>
+
+  <h3>2. Simple Explanation</h3>
+  <div class="card">
+    <p>This chapter answers: <strong>Do fundamentals matter in momentum trading?</strong></p>
+    <p>All traders agree:</p>
+    <ul>
+      <li>Yes, fundamentals matter — but not in a traditional "value investing" way</li>
+    </ul>
+    <p>They focus mainly on:</p>
+    <ul>
+      <li>Earnings growth</li>
+      <li>Sales growth</li>
+      <li>Future potential</li>
+    </ul>
+    <p><strong>In simple terms:</strong> Price goes up because big investors expect strong growth. Strong growth = more buyers = higher price.</p>
+    <p>So:</p>
+    <ul>
+      <li>Technicals tell you <em>when</em> to act</li>
+      <li>Fundamentals tell you <em>why</em> the stock can keep going</li>
+    </ul>
+  </div>
+
+  <h3>3. Key Ideas / Concepts</h3>
+  <div class="card blue">
+    <ol>
+      <li><strong>Earnings Drive Big Moves</strong> — Stocks with strong earnings growth tend to become big winners. → Institutions chase growth.</li>
+      <li><strong>Forward-Looking, Not Past Data</strong> — Markets care about the future, not past performance. → Expectations matter more than history.</li>
+      <li><strong>Growth &gt; Cheap Valuation</strong> — Low PE or "cheap" stocks are not preferred. → High growth stocks often look expensive — but keep rising.</li>
+      <li><strong>Institutional Interest</strong> — Big funds look for scalable, growing businesses. → Their buying creates large trends.</li>
+      <li><strong>Story Must Match Price</strong> — If fundamentals are strong → price should reflect it. → Mismatch = warning sign.</li>
+      <li><strong>Simplicity Over Complexity</strong> — Top traders don't analyze hundreds of ratios. → Focus only on key growth metrics.</li>
+    </ol>
+  </div>
+
+  <h3>4. Author's Thinking (Mental Model)</h3>
+  <div class="card">
+    <p>Their philosophy:</p>
+    <p class="quote">"Strong price without strong fundamentals is weak... and strong fundamentals without price movement is useless."</p>
+    <p>They combine:</p>
+    <ul>
+      <li>Fundamentals → quality &amp; potential</li>
+      <li>Technicals → entry &amp; timing</li>
+    </ul>
+    <p>They avoid: deep value analysis.</p>
+  </div>
+
+  <h3>5. Why This Matters</h3>
+  <div class="card warn">
+    <p>Many traders:</p>
+    <ul>
+      <li>Either ignore fundamentals completely</li>
+      <li>Or overanalyze financial data</li>
+    </ul>
+    <p>Both extremes are wrong. This chapter teaches balance:</p>
+    <ul>
+      <li>Use fundamentals to filter quality stocks</li>
+      <li>Use technicals to execute trades</li>
+    </ul>
+    <p>Without fundamentals, you may pick weak stocks. Without technicals, you may enter at wrong time.</p>
+  </div>
+
+  <h3>6. Structured View — Technicals vs Fundamentals</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Aspect</th><th>Technicals</th><th>Fundamentals</th></tr></thead>
+      <tbody>
+        <tr><td>Purpose</td><td>Timing</td><td>Quality</td></tr>
+        <tr><td>Focus</td><td>Price &amp; Volume</td><td>Earnings &amp; Growth</td></tr>
+        <tr><td>Role</td><td>Entry/Exit</td><td>Selection Filter</td></tr>
+        <tr><td>Timeframe</td><td>Short–Medium</td><td>Medium–Long</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>7. Example / Analogy</h3>
+  <div class="card blue">
+    <p><strong>Medical Analogy (Diagnosis + Vitals)</strong></p>
+    <ul>
+      <li>Fundamentals = diagnosis (is the patient strong?)</li>
+      <li>Technicals = vital signs (what is happening now?)</li>
+    </ul>
+    <p>A healthy patient (good fundamentals) but unstable vitals (bad timing) → risky.</p>
+    <p>Best case = both aligned.</p>
+  </div>
+
+  <h3>8. Common Misunderstanding</h3>
+  <div class="card bad">
+    <ul>
+      <li><strong>"Momentum traders ignore fundamentals"</strong> → False. They use focused fundamentals.</li>
+      <li><strong>"Low PE stocks are better"</strong> → Not necessarily. Growth matters more.</li>
+      <li><strong>"Good company = good stock"</strong> → Not always. Price action must confirm.</li>
+      <li><strong>"More financial analysis = better decisions"</strong> → Often leads to confusion.</li>
+    </ul>
+  </div>
+
+  <h3>9. Chapter Summary (5–8 bullets)</h3>
+  <div class="card accent">
+    <ul>
+      <li>Earnings growth is key driver of big winners</li>
+      <li>Focus on future potential, not past data</li>
+      <li>Growth is more important than cheap valuation</li>
+      <li>Institutions drive trends in strong companies</li>
+      <li>Price must confirm fundamental strength</li>
+      <li>Keep analysis simple and focused</li>
+      <li>Combine fundamentals with technicals</li>
+      <li>Avoid overanalysis</li>
+    </ul>
+  </div>
+
+  <h3>10. Connection</h3>
+  <div class="card">
+    <p><strong>With Previous Chapter (Technical Analysis):</strong> Technicals tell when to buy. Fundamentals tell what to buy.</p>
+    <p><strong>With Next Chapters:</strong> Leads into general market direction, entry timing, risk management. Fundamentals = foundation of stock quality.</p>
+  </div>
+
+  <div class="quote">Final Insight: Stocks don't move because they are cheap... They move because they are growing.</div>
+</section>
+
+<!-- ================= TAB 9 : CHAPTER 6 ================= -->
+<section class="panel" id="p10">
+  <h2 class="chapter">Chapter 6 — General Market</h2>
+  <p class="chapter-sub">Why even great stocks struggle in a weak market</p>
+
+  <h3>1. Core Message (Most Important)</h3>
+  <div class="card accent">
+    <p>Even the best stocks struggle in a weak market.</p>
+    <p>Your success depends not just on stock selection, but on aligning with the overall market direction.</p>
+  </div>
+
+  <h3>2. Simple Explanation</h3>
+  <div class="card">
+    <p>This chapter answers: <strong>How important is the overall market?</strong></p>
+    <p>All traders strongly agree:</p>
+    <ul>
+      <li>The general market direction (uptrend or downtrend) is critical</li>
+      <li>Most stocks follow the market's trend</li>
+    </ul>
+    <p><strong>In simple terms:</strong></p>
+    <ul>
+      <li>When market is rising → easier to make money</li>
+      <li>When market is falling → even good stocks fail</li>
+    </ul>
+    <p><strong>Think of it like this:</strong> You are swimming. Market direction = water current. If the current is against you → very hard to move forward.</p>
+  </div>
+
+  <h3>3. Key Ideas / Concepts</h3>
+  <div class="card blue">
+    <ol>
+      <li><strong>Market Direction Controls Outcomes</strong> — Most stocks move with the market. → Fighting the market leads to losses.</li>
+      <li><strong>Follow the Trend</strong> — Uptrend → more aggressive.</li>
+      <li><strong>Cash is a Position</strong> — Not trading is also a decision. → Sitting in cash during bad markets protects capital.</li>
+      <li><strong>Market Timing Matters</strong> — When you enter the market is as important as what you buy.</li>
+      <li><strong>Distribution vs Accumulation</strong> — Accumulation = institutions buying. Distribution = institutions selling. → These phases signal market health.</li>
+      <li><strong>Flexibility is Key</strong> — Traders must adapt quickly when market conditions change.</li>
+    </ol>
+  </div>
+
+  <h3>4. Author's Thinking (Mental Model)</h3>
+  <div class="card">
+    <p>Their core belief:</p>
+    <p class="quote">"The market is bigger than any stock."</p>
+    <p>They think in terms of:</p>
+    <ul>
+      <li>Market = primary force</li>
+      <li>Stocks = secondary</li>
+    </ul>
+    <p>Their approach:</p>
+    <ul>
+      <li>First analyze market direction</li>
+      <li>Then select stocks accordingly</li>
+    </ul>
+    <p>They avoid:</p>
+    <ul>
+      <li>Fighting trends</li>
+      <li>Blindly holding positions in weak markets</li>
+    </ul>
+  </div>
+
+  <h3>5. Why This Matters</h3>
+  <div class="card warn">
+    <p>Most traders:</p>
+    <ul>
+      <li>Focus only on individual stocks</li>
+      <li>Ignore market conditions</li>
+    </ul>
+    <p>This leads to frustration:</p>
+    <ul>
+      <li>Good setups fail</li>
+      <li>Breakouts don't work</li>
+    </ul>
+    <p>This chapter solves that by teaching: timing the market environment improves probability of success.</p>
+  </div>
+
+  <h3>6. Structured View — Market Environment Strategy</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Market Condition</th><th>Trader Approach</th></tr></thead>
+      <tbody>
+        <tr><td>Strong Uptrend</td><td class="ok">Aggressive buying</td></tr>
+        <tr><td>Sideways / Uncertain</td><td>Selective, smaller positions</td></tr>
+        <tr><td>Downtrend</td><td class="no">Defensive / cash</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>7. Example / Analogy</h3>
+  <div class="card blue">
+    <p><strong>Weather Analogy</strong></p>
+    <ul>
+      <li>Good stock = strong athlete</li>
+      <li>Market = weather</li>
+    </ul>
+    <p>Even a strong runner:</p>
+    <ul>
+      <li>Performs well in good weather</li>
+      <li>Struggles in a storm</li>
+    </ul>
+    <p>You don't ignore weather — you adapt.</p>
+  </div>
+
+  <h3>8. Common Misunderstanding</h3>
+  <div class="card bad">
+    <ul>
+      <li><strong>"If stock is good, market doesn't matter"</strong> → Wrong. Market dominates.</li>
+      <li><strong>"Always stay invested"</strong> → No. Cash is a valid strategy.</li>
+      <li><strong>"I can predict market perfectly"</strong> → Not required. Just read current conditions.</li>
+      <li><strong>"More trades = more profit"</strong> → Overtrading in bad markets leads to losses.</li>
+    </ul>
+  </div>
+
+  <h3>9. Chapter Summary (5–8 bullets)</h3>
+  <div class="card accent">
+    <ul>
+      <li>Market direction strongly influences stock performance</li>
+      <li>Align trades with overall trend</li>
+      <li>Avoid fighting the market</li>
+      <li>Use cash in weak conditions</li>
+      <li>Recognize accumulation and distribution phases</li>
+      <li>Adjust aggression based on market strength</li>
+      <li>Flexibility is essential</li>
+      <li>Timing the market improves outcomes</li>
+    </ul>
+  </div>
+
+  <h3>10. Connection</h3>
+  <div class="card">
+    <p><strong>With Previous Chapter (Fundamentals):</strong> Strong fundamentals still need supportive market conditions.</p>
+    <p><strong>With Next Chapters:</strong> Leads into entry criteria, risk management, trade execution. Market direction = context for all trading decisions.</p>
+  </div>
+
+  <div class="quote">Final Insight: You don't control the market... But you must learn to operate within its direction.</div>
+</section>
+
+<!-- ================= TAB 10 : CHAPTER 7 ================= -->
+<section class="panel" id="p11">
+  <h2 class="chapter">Chapter 7 — Entry Criteria</h2>
+  <p class="chapter-sub">Exact buying points and timing precision</p>
+
+  <h3>1. Core Message (Most Important)</h3>
+  <div class="card accent">
+    <p>Buying the right stock is not enough — you must buy it at the right moment.</p>
+    <p>Great traders wait patiently for high-probability entry points, not random opportunities.</p>
+  </div>
+
+  <h3>2. Simple Explanation</h3>
+  <div class="card">
+    <p>This chapter answers: <strong>When exactly should you buy a stock?</strong></p>
+    <p>All traders agree:</p>
+    <ul>
+      <li>Don't buy randomly</li>
+      <li>Don't chase price after it has already moved too much</li>
+      <li>Wait for proper setups where risk is low and potential is high</li>
+    </ul>
+    <p><strong>In simple terms:</strong> Good entry = limited downside + strong upside potential.</p>
+    <p>Most good entries happen when:</p>
+    <ul>
+      <li>A stock breaks out of a base</li>
+      <li>Or pulls back in a healthy uptrend</li>
+    </ul>
+  </div>
+
+  <h3>3. Key Ideas / Concepts</h3>
+  <div class="card blue">
+    <ol>
+      <li><strong>Buy at Pivot Points</strong> — A pivot point is where the stock breaks out from consolidation. → This is where momentum often starts.</li>
+      <li><strong>Breakouts Need Confirmation</strong> — Volume and follow-through validate the breakout.</li>
+      <li><strong>Tight Risk = Better Entry</strong> — Best entries are where stop-loss can be close. → Small risk, large reward potential.</li>
+      <li><strong>Avoid Extended Stocks</strong> — If stock has already moved far from base → risk increases. Late entry = poor risk-reward.</li>
+      <li><strong>Pullback Entries</strong> — Buying during controlled pullbacks in an uptrend can be safer.</li>
+      <li><strong>Confluence Matters</strong> — Best entries occur when multiple factors align: strong stock, good market, proper setup.</li>
+      <li><strong>Patience is Critical</strong> — Most of the time, traders should be waiting — not trading.</li>
+    </ol>
+  </div>
+
+  <h3>4. Author's Thinking (Mental Model)</h3>
+  <div class="card">
+    <p>The traders think:</p>
+    <p class="quote">"We don't chase opportunities — we wait for them to come to us."</p>
+    <p>Their mindset:</p>
+    <ul>
+      <li>Entry = calculated decision, not impulse</li>
+      <li>Risk control begins at entry</li>
+      <li>Precision matters more than frequency</li>
+    </ul>
+    <p>They avoid:</p>
+    <ul>
+      <li>Emotional buying</li>
+      <li>Late entries</li>
+      <li>Overtrading</li>
+    </ul>
+  </div>
+
+  <h3>5. Why This Matters</h3>
+  <div class="card warn">
+    <p>Many traders:</p>
+    <ul>
+      <li>Buy too early → stock not ready</li>
+      <li>Buy too late → move already over</li>
+    </ul>
+    <p>Result: losses or frustration.</p>
+    <p>This chapter solves that by teaching: timing improves probability dramatically.</p>
+    <p>Even a great stock: wrong entry = loss, right entry = profit.</p>
+  </div>
+
+  <h3>6. Structured View — Entry Quality Comparison</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Entry Type</th><th>Risk</th><th>Probability</th><th>Outcome</th></tr></thead>
+      <tbody>
+        <tr><td>Early (before setup)</td><td class="no">High</td><td class="no">Low</td><td>Uncertain</td></tr>
+        <tr><td>Proper breakout</td><td class="ok">Controlled</td><td class="ok">High</td><td class="ok">Favorable</td></tr>
+        <tr><td>Late (chasing)</td><td class="no">High</td><td class="no">Low</td><td class="no">Poor</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>7. Example / Analogy</h3>
+  <div class="card blue">
+    <p><strong>Archery Analogy</strong></p>
+    <ul>
+      <li>Stock = target</li>
+      <li>Entry point = moment you release arrow</li>
+    </ul>
+    <p>If:</p>
+    <ul>
+      <li>You shoot too early → miss</li>
+      <li>You shoot too late → miss</li>
+    </ul>
+    <p>Perfect timing = highest accuracy.</p>
+  </div>
+
+  <h3>8. Common Misunderstanding</h3>
+  <div class="card bad">
+    <ul>
+      <li><strong>"If stock is good, buy anytime"</strong> → Wrong. Timing matters.</li>
+      <li><strong>"FOMO is okay"</strong> → Leads to bad entries.</li>
+      <li><strong>"More trades = more profit"</strong> → Overtrading reduces quality.</li>
+      <li><strong>"Breakout always works"</strong> → Needs confirmation.</li>
+    </ul>
+  </div>
+
+  <h3>9. Chapter Summary (5–8 bullets)</h3>
+  <div class="card accent">
+    <ul>
+      <li>Entry timing is critical for success</li>
+      <li>Buy at breakout or controlled pullback</li>
+      <li>Volume confirms valid moves</li>
+      <li>Avoid chasing extended stocks</li>
+      <li>Keep risk small at entry</li>
+      <li>Wait for high-quality setups</li>
+      <li>Confluence improves success rate</li>
+    </ul>
+  </div>
+
+  <h3>10. Connection</h3>
+  <div class="card">
+    <p><strong>With Previous Chapter (General Market):</strong> Best entries work when market direction supports them.</p>
+    <p><strong>With Next Chapters:</strong> Leads into risk management, selling strategy, trade management. Entry = execution trigger of the trading process.</p>
+  </div>
+
+  <div class="quote">Final Insight: The difference between amateurs and professionals... is not what they buy, but when they buy it.</div>
+</section>
+
+<!-- ================= TAB 11 : CHAPTER 8 ================= -->
+<section class="panel" id="p12">
+  <h2 class="chapter">Chapter 8 — Risk Management</h2>
+  <p class="chapter-sub">Where survival and long-term success are defined</p>
+
+  <h3>1. Core Message (Most Important)</h3>
+  <div class="card accent">
+    <p>The first rule of trading is not making money — it is protecting capital.</p>
+    <p>Successful traders survive because they control losses strictly, not because they avoid them.</p>
+  </div>
+
+  <h3>2. Simple Explanation</h3>
+  <div class="card">
+    <p>This chapter answers: <strong>How do you avoid blowing up your account?</strong></p>
+    <p>All traders strongly agree:</p>
+    <ul>
+      <li>Losses are unavoidable</li>
+      <li>Big losses are avoidable</li>
+    </ul>
+    <p><strong>In simple terms:</strong> You don't need to win every trade. You need to keep losses small and controlled.</p>
+    <p>They emphasize:</p>
+    <ul>
+      <li>Cut losses quickly</li>
+      <li>Never let a small loss become a big one</li>
+      <li>Focus on survival first</li>
+    </ul>
+  </div>
+
+  <h3>3. Key Ideas / Concepts</h3>
+  <div class="card blue">
+    <ol>
+      <li><strong>Cut Losses Early</strong> — Exit when trade goes wrong. → Don't wait and hope.</li>
+      <li><strong>Small Losses Are Normal</strong> — Losses are part of trading. → Accept them as business cost.</li>
+      <li><strong>Avoid Big Losses</strong> — One big loss can destroy months of gains. → This is the biggest danger.</li>
+      <li><strong>Predefined Risk</strong> — Know your exit before entering the trade. → No decision-making under pressure.</li>
+      <li><strong>Discipline Over Emotion</strong> — Most losses come from ignoring rules. → Emotional decisions cause damage.</li>
+      <li><strong>No Averaging Down</strong> — Adding to losing trades increases risk. → Opposite of professional behavior.</li>
+      <li><strong>Protect Mental Capital</strong> — Big losses damage confidence. → Leads to poor future decisions.</li>
+    </ol>
+  </div>
+
+  <h3>4. Author's Thinking (Mental Model)</h3>
+  <div class="card">
+    <p>The traders think like this:</p>
+    <p class="quote">"If I control losses, profits will take care of themselves."</p>
+    <p>Their mindset:</p>
+    <ul>
+      <li>Survival &gt; profit</li>
+      <li>Risk control = primary skill</li>
+      <li>Losses are acceptable, large losses are not</li>
+    </ul>
+    <p>They avoid:</p>
+    <ul>
+      <li>Hope-based decisions</li>
+      <li>Ego-driven holding</li>
+      <li>Revenge trading</li>
+    </ul>
+  </div>
+
+  <h3>5. Why This Matters</h3>
+  <div class="card warn">
+    <p>Most traders fail because:</p>
+    <ul>
+      <li>They hold losing trades</li>
+      <li>They refuse to accept mistakes</li>
+      <li>They let losses grow</li>
+    </ul>
+    <p>Result: account destruction.</p>
+    <p>This chapter solves that by teaching: small losses keep you in the game long enough to win.</p>
+  </div>
+
+  <h3>6. Structured View — Loss Impact Reality</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Loss %</th><th>Gain Needed to Recover</th></tr></thead>
+      <tbody>
+        <tr><td>10%</td><td>11%</td></tr>
+        <tr><td>20%</td><td>25%</td></tr>
+        <tr><td class="no">50%</td><td class="no">100%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">Bigger loss = exponentially harder recovery.</p>
+
+  <h3>7. Example / Analogy</h3>
+  <div class="card blue">
+    <p><strong>Medical Analogy (Infection Control)</strong></p>
+    <ul>
+      <li>Small infection → easy to treat</li>
+      <li>Ignored infection → becomes dangerous</li>
+      <li>Early intervention saves life</li>
+    </ul>
+    <p>Same in trading:</p>
+    <ul>
+      <li>Small loss → manageable</li>
+      <li>Ignored loss → catastrophic</li>
+    </ul>
+  </div>
+
+  <h3>8. Common Misunderstanding</h3>
+  <div class="card bad">
+    <ul>
+      <li><strong>"I'll wait till it comes back"</strong> → Hope is not a strategy</li>
+      <li><strong>"Good stock will recover"</strong> → Maybe — but timing matters</li>
+      <li><strong>"Selling at loss means failure"</strong> → Wrong. It means discipline</li>
+    </ul>
+  </div>
+
+  <h3>9. Chapter Summary (5–8 bullets)</h3>
+  <div class="card accent">
+    <ul>
+      <li>Protect capital above everything</li>
+      <li>Losses are normal, big losses are dangerous</li>
+      <li>Cut losses quickly and decisively</li>
+      <li>Predefine exit before entering trade</li>
+      <li>Avoid emotional decision-making</li>
+      <li>Never average down</li>
+      <li>Discipline is key to survival</li>
+      <li>Small losses enable long-term success</li>
+    </ul>
+  </div>
+
+  <h3>10. Connection</h3>
+  <div class="card">
+    <p><strong>With Previous Chapter (Entry Criteria):</strong> Good entry reduces risk — but risk management protects when wrong.</p>
+    <p><strong>With Next Chapters:</strong> Leads into selling strategies, trade management, psychology. Risk management = survival system of trading.</p>
+  </div>
+
+  <div class="quote">Final Insight: You are not paid for being right... You are rewarded for managing risk correctly.</div>
+</section>
+
+<!-- ================= TAB 12 : CHAPTER 9 ================= -->
+<section class="panel" id="p13">
+  <h2 class="chapter">Chapter 9 — Selling</h2>
+  <p class="chapter-sub">Where profits are actually realized and protected</p>
+
+  <h3>1. Core Message (Most Important)</h3>
+  <div class="card accent">
+    <p>Making money in trading is not about buying — it is about selling correctly.</p>
+    <p>Great traders protect profits and limit losses by knowing when and why to exit.</p>
+  </div>
+
+  <h3>2. Simple Explanation</h3>
+  <div class="card">
+    <p>This chapter answers: <strong>When should you sell a stock?</strong></p>
+    <p>All traders agree:</p>
+    <ul>
+      <li>Selling is harder than buying</li>
+      <li>There is no single rule — context matters</li>
+    </ul>
+    <p>But they follow clear principles:</p>
+    <ul>
+      <li>Cut losses quickly (already covered)</li>
+      <li>Protect profits when stock shows weakness</li>
+      <li>Let strong stocks run when conditions are right</li>
+    </ul>
+    <p><strong>In simple terms, sell when:</strong></p>
+    <ul>
+      <li>You are wrong</li>
+      <li>The trend weakens</li>
+      <li>The opportunity is over</li>
+    </ul>
+  </div>
+
+  <h3>3. Key Ideas / Concepts</h3>
+  <div class="card blue">
+    <ol>
+      <li><strong>Cut Losses Fast</strong> — If trade goes wrong → exit quickly.</li>
+      <li><strong>Take Partial Profits</strong> — Some traders sell part of position to lock gains. → Reduces pressure and risk.</li>
+      <li><strong>Let Winners Run</strong> — Big money comes from holding strong stocks. → Don't exit too early.</li>
+      <li><strong>Sell on Weakness</strong> — Signs of weakness: heavy selling (high volume down move), failed breakouts. → Indicates institutions may be exiting.</li>
+      <li><strong>Trailing Stops</strong> — As stock rises → adjust stop-loss upward. → Protect gains while allowing growth.</li>
+      <li><strong>Different Strategies Exist</strong> — Some traders sell quickly, others hold longer. → But all manage risk carefully.</li>
+      <li><strong>Emotional Control is Critical</strong> — Greed → holding too long. Fear → selling too early.</li>
+    </ol>
+  </div>
+
+  <h3>4. Author's Thinking (Mental Model)</h3>
+  <div class="card">
+    <p>Their philosophy:</p>
+    <p class="quote">"You don't control profits — you control exits."</p>
+    <p>They think in terms of:</p>
+    <ul>
+      <li>Risk first</li>
+      <li>Profit protection second</li>
+      <li>Opportunity cost third</li>
+    </ul>
+    <p>They accept: imperfect exits.</p>
+    <p>They avoid:</p>
+    <ul>
+      <li>Emotional decisions</li>
+      <li>Holding losers</li>
+      <li>Selling winners too early without reason</li>
+    </ul>
+  </div>
+
+  <h3>5. Why This Matters</h3>
+  <div class="card warn">
+    <p>Most traders fail because:</p>
+    <ul>
+      <li>They don't cut losses</li>
+      <li>They sell winners too early</li>
+      <li>They hold losers too long</li>
+    </ul>
+    <p>Result: small gains + big losses = failure.</p>
+  </div>
+
+  <h3>6. Structured View — Exit Decision Framework</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Situation</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>Trade invalidated</td><td class="no">Exit immediately</td></tr>
+        <tr><td>Strong uptrend continues</td><td class="ok">Hold</td></tr>
+        <tr><td>Partial target reached</td><td>Book partial profits</td></tr>
+        <tr><td>Weakness appears</td><td class="no">Reduce or exit</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>7. Example / Analogy</h3>
+  <div class="card blue">
+    <p><strong>Flight Landing Analogy</strong></p>
+    <ul>
+      <li>Buying = takeoff</li>
+      <li>Holding = flight</li>
+      <li>Selling = landing</li>
+    </ul>
+    <p>A bad landing can ruin a perfect flight. Even if the journey was excellent, you must land safely to complete it.</p>
+  </div>
+
+  <h3>8. Common Misunderstanding</h3>
+  <div class="card bad">
+    <ul>
+      <li><strong>"I'll sell when I feel like it"</strong> → Leads to emotional decisions</li>
+      <li><strong>"I should hold forever"</strong> → Not all stocks are long-term winners</li>
+      <li><strong>"Booking profit early is always safe"</strong> → Can limit big gains</li>
+      <li><strong>"I missed the top = failure"</strong> → Impossible to exit perfectly</li>
+    </ul>
+  </div>
+
+  <h3>9. Chapter Summary (5–8 bullets)</h3>
+  <div class="card accent">
+    <ul>
+      <li>Selling is more difficult than buying</li>
+      <li>Cut losses quickly without hesitation</li>
+      <li>Let strong winners continue</li>
+      <li>Take partial profits when appropriate</li>
+      <li>Watch for signs of weakness</li>
+      <li>Use trailing stops to protect gains</li>
+      <li>Avoid emotional decisions</li>
+      <li>Accept imperfect exits</li>
+    </ul>
+  </div>
+
+  <h3>10. Connection</h3>
+  <div class="card">
+    <p><strong>With Previous Chapter (Risk Management):</strong> Selling is execution of risk control. Loss cutting and profit protection are linked.</p>
+    <p><strong>With Entire Book:</strong> Completes the trading cycle — stock selection, position sizing, entry, risk, exit. Selling = final step where results are realized.</p>
+  </div>
+
+  <div class="quote">Final Insight: You can be right about a stock... and still lose money — if you don't know when to sell.</div>
+</section>
+
+<!-- ================= TAB 13 : BIG PICTURE ================= -->
+<section class="panel" id="p14">
+  <h2 class="chapter">Big Picture — One-Page Mental Model</h2>
+  <p class="chapter-sub">Full book synthesis, chapters 1 → 9</p>
+
+  <h3>The Loop</h3>
+  <div class="card accent">
+    <p><strong>1. Mindset → 2. Stock → 3. Size → 4. Timing → 5. Quality → 6. Market → 7. Entry → 8. Risk → 9. Exit</strong></p>
+    <p>This is not linear — it's a continuous loop.</p>
+  </div>
+
+  <h3>1. Foundation (Invisible but Critical)</h3>
+  <div class="card blue">
+    <h4>Mindset (Chapter 1)</h4>
+    <ul>
+      <li>Discipline &gt; intelligence</li>
+      <li>Process &gt; prediction</li>
+      <li>Experience &gt; shortcuts</li>
+    </ul>
+    <p><strong>If this fails → everything fails.</strong></p>
+  </div>
+
+  <h3>2. What to Buy</h3>
+  <div class="card">
+    <h4>Stock Selection (Chapter 2)</h4>
+    <ul>
+      <li>Strong stocks (leaders, not laggards)</li>
+      <li>High relative strength</li>
+      <li>Institutional demand</li>
+    </ul>
+    <h4>Fundamentals (Chapter 5)</h4>
+    <ul>
+      <li>Earnings growth = fuel</li>
+      <li>Future potential &gt; past data</li>
+    </ul>
+  </div>
+
+  <h3>3. When to Play</h3>
+  <div class="card">
+    <h4>Market Direction (Chapter 6)</h4>
+    <ul>
+      <li>Trade with the market, not against it</li>
+      <li>Uptrend = opportunity</li>
+      <li>Downtrend = defense/cash</li>
+    </ul>
+    <p>Context = Tailwind or Headwind.</p>
+  </div>
+
+  <h3>4. When to Act</h3>
+  <div class="card">
+    <h4>Technicals (Chapter 4)</h4>
+    <ul>
+      <li>Price = truth</li>
+      <li>Volume = conviction</li>
+    </ul>
+    <h4>Entry (Chapter 7)</h4>
+    <ul>
+      <li>Buy at breakout or controlled pullback</li>
+      <li>Avoid chasing</li>
+      <li>Wait for proper setup</li>
+    </ul>
+    <p>Trigger = Right moment.</p>
+  </div>
+
+  <h3>5. How Much to Risk</h3>
+  <div class="card">
+    <h4>Position Sizing (Chapter 3)</h4>
+    <ul>
+      <li>Bigger size for better setups</li>
+      <li>Smaller size for uncertainty</li>
+      <li>Never overexpose</li>
+    </ul>
+    <p>Leverage = Controlled aggression.</p>
+  </div>
+
+  <h3>6. How to Survive</h3>
+  <div class="card">
+    <h4>Risk Management (Chapter 8)</h4>
+    <ul>
+      <li>Cut losses early</li>
+      <li>Never average down</li>
+      <li>Predefine exit</li>
+    </ul>
+    <p>Rule = Small losses only.</p>
+  </div>
+
+  <h3>7. How to Win</h3>
+  <div class="card">
+    <h4>Selling (Chapter 9)</h4>
+    <ul>
+      <li>Cut losers fast</li>
+      <li>Let winners run</li>
+      <li>Sell on weakness</li>
+      <li>Use trailing stops</li>
+    </ul>
+    <p>Outcome = Profit realization.</p>
+  </div>
+
+  <h3>Complete System Flow</h3>
+  <div class="flow">
+    <div class="flow-step">Strong Stock</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">Supported by Fundamentals</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">Aligned with Market Trend</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">Proper Technical Setup</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">Precise Entry Point</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">Correct Position Size</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">Strict Risk Control</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step highlight">Disciplined Exit</div>
+  </div>
+
+  <h3>Risk-Reward Engine (Hidden Core)</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Component</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td>Entry</td><td>Defines risk</td></tr>
+        <tr><td>Position size</td><td>Amplifies outcome</td></tr>
+        <tr><td>Risk control</td><td>Prevents destruction</td></tr>
+        <tr><td>Exit</td><td>Locks result</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">Profit is not random — it is engineered.</p>
+
+  <h3>Master Principles (Across All Chapters)</h3>
+  <div class="card accent">
+    <ol>
+      <li><strong>Strength over Cheapness</strong> — Winners look expensive. Losers look cheap.</li>
+      <li><strong>Process over Prediction</strong> — You don't predict. You react to evidence.</li>
+      <li><strong>Risk First, Profit Later</strong> — Survival creates opportunity.</li>
+      <li><strong>Few Big Winners Matter</strong> — Small gains don't build wealth.</li>
+      <li><strong>Discipline is the Real Edge</strong> — Same knowledge ≠ same results. Behavior decides outcome.</li>
+    </ol>
+  </div>
+
+  <h3>Failure Pattern (What Most Traders Do)</h3>
+  <div class="card bad">
+    <ul>
+      <li>Buy weak stocks ✗</li>
+      <li>Ignore market ✗</li>
+      <li>Enter randomly ✗</li>
+      <li>Oversize positions ✗</li>
+      <li>Hold losses ✗</li>
+      <li>Exit winners early ✗</li>
+    </ul>
+    <p><strong>Result = consistent failure</strong></p>
+  </div>
+
+  <h3>Success Pattern (What This Book Teaches)</h3>
+  <div class="card accent">
+    <ul>
+      <li>Select strong stocks ✓</li>
+      <li>Align with market ✓</li>
+      <li>Wait for setup ✓</li>
+      <li>Size properly ✓</li>
+      <li>Cut losses early ✓</li>
+      <li>Let winners grow ✓</li>
+    </ul>
+    <p><strong>Result = asymmetric returns</strong></p>
+  </div>
+
+  <h3>Final Meta-Insight</h3>
+  <div class="card warn">
+    <p>This book is NOT teaching you a strategy...</p>
+    <p><strong>It is teaching you a decision-making system under uncertainty.</strong></p>
+  </div>
+
+  <h3>Ultra-Short Memory Version (For Fast Recall)</h3>
+  <div class="card blue">
+    <p><strong>Strong Stock + Strong Market + Right Entry + Right Size + Small Loss + Big Winner = Trading Success</strong></p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>Momentum Masters — structured chapter notes.</p>
+  <p>Source thread: <code>https://chatgpt.com/c/6aaac988-1a54-83ee-919f-365e227508da</code></p>
+</footer>
+
+<script>
+(function(){
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('.panel'));
+  var bar = document.getElementById('tabbar');
+  var prog = document.getElementById('progress');
+
+  function updateProgress(){
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var pct = max > 0 ? (window.scrollY / max) * 100 : 0;
+    prog.style.width = Math.min(100, Math.max(0, pct)) + '%';
+  }
+
+  function activate(i, scroll){
+    tabs.forEach(function(t,n){ t.classList.toggle('active', n===i); });
+    panels.forEach(function(p,n){ p.classList.toggle('active', n===i); });
+    if(scroll !== false){
+      window.scrollTo({top:0, behavior:'smooth'});
+      var t = tabs[i];
+      if(t && bar){
+        var left = t.offsetLeft - (bar.clientWidth/2) + (t.clientWidth/2);
+        bar.scrollTo({left: Math.max(0,left), behavior:'smooth'});
+      }
+    }
+    requestAnimationFrame(updateProgress);
+  }
+
+  tabs.forEach(function(t,i){
+    t.addEventListener('click', function(){ activate(i); });
+  });
+
+  // keyboard left/right navigation
+  document.addEventListener('keydown', function(e){
+    var tag = (e.target.tagName || '').toLowerCase();
+    if(tag === 'input' || tag === 'textarea') return;
+    var current = tabs.findIndex(function(t){ return t.classList.contains('active'); });
+    if(e.key === 'ArrowRight' && current < tabs.length-1){ activate(current+1); }
+    if(e.key === 'ArrowLeft' && current > 0){ activate(current-1); }
+  });
+
+  // support #hash deep links (e.g. #p5)
+  if(location.hash){
+    var idx = panels.findIndex(function(p){ return '#'+p.id === location.hash; });
+    if(idx > -1) activate(idx, false);
+  }
+
+  window.addEventListener('scroll', updateProgress, {passive:true});
+  window.addEventListener('resize', updateProgress);
+  updateProgress();
+})();
+</script>
+</body>
+</html>
